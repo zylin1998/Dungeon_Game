@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb42aa65c7ce6ad4c8a85537d112d476, type: 3}
+  m_Name: MobileInput
+  m_EditorClassIdentifier: 
+  floatAxis:
+  - keyState: 7
+    maxRange: 60
+    minRange: -60
+  - keyState: 8
+    maxRange: 30
+    minRange: 150
+  boolAxis: 040000000500000006000000

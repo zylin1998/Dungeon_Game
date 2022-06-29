@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb4898e41bffd66418d73c2658e62e20, type: 3}
+  m_Name: DefaultInput
+  m_EditorClassIdentifier: 
+  keyInputs:
+  - inputType: 0
+    keyFrames:
+    - keyState: 0
+      keyCode: 273
+    - keyState: 1
+      keyCode: 274
+    - keyState: 3
+      keyCode: 275
+    - keyState: 2
+      keyCode: 276
+    - keyState: 4
+      keyCode: 118
+    - keyState: 5
+      keyCode: 99
+    - keyState: 6
+      keyCode: 120
+  - inputType: 1
+    keyFrames:
+    - keyState: 0
+      keyCode: 330
+    - keyState: 1
+      keyCode: 331
+    - keyState: 3
+      keyCode: 332
+    - keyState: 2
+      keyCode: 333
+    - keyState: 4
+      keyCode: 334
+    - keyState: 5
+      keyCode: 335
+    - keyState: 6
+      keyCode: 336
