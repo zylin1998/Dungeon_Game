@@ -12,15 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50662a0d218a57f48bf455209140ac31, type: 3}
   m_Name: sword_man
   m_EditorClassIdentifier: 
-  walkSpeed: 3.2
-  dashSpeed: 8.5
-  jumpForce: 15
-  dashCoolDown: 1.6
-  uncontrollableAction:
-  - Attack
-  - Dash
-  offset: {x: 0, y: 0.22}
-  size: {x: 0.5, y: 1.3}
-  mass: 1
-  angularDrag: 0
-  gravityScale: 3
+  actionDetail:
+    walkSpeed: 3.5
+    dashSpeed: 8.5
+    jumpForce: 15
+    dashCoolDown: 1.2
+    maxJumpCount: 2
+    maxJumpHold: 0.3
+    unControllableAction:
+    - Attack
+    - Dash
+  physicalDetail:
+    life: 100
+    mp: 85
+    damage: 15
+    defend: 12

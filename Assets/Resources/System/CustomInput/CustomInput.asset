@@ -12,4 +12,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb4898e41bffd66418d73c2658e62e20, type: 3}
   m_Name: CustomInput
   m_EditorClassIdentifier: 
-  keyInputs: []
+  inputLists:
+  - inputType: 0
+    axes:
+    - axesName: Horizontal
+      positive: 275
+      negative: 276
+    - axesName: Vertical
+      positive: 273
+      negative: 274
+    - axesName: Attack
+      positive: 118
+      negative: 0
+    - axesName: Jump
+      positive: 99
+      negative: 0
+    - axesName: Dash
+      positive: 120
+      negative: 0
+    - axesName: Inventory
+      positive: 256
+      negative: 0
+  - inputType: 1
+    axes:
+    - axesName: Horizontal
+      positive: 330
+      negative: 331
+    - axesName: Vertical
+      positive: 332
+      negative: 333
+    - axesName: Attack
+      positive: 334
+      negative: 0
+    - axesName: Jump
+      positive: 335
+      negative: 0
+    - axesName: Dash
+      positive: 336
+      negative: 0
+    - axesName: Inventory
+      positive: 337
+      negative: 0

@@ -7,19 +7,18 @@ namespace CustomInput
     public class MobileInputButton : MonoBehaviour, IPointerDownHandler , IPointerUpHandler
     {
         [SerializeField]
-        private KeyState keyState;
+        private string axesName;
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            MobileInput.SetKeyDown(keyState, true);
+            MobileInput.SetButtonDown(axesName, true);
 
             StartCoroutine(Holding());
-
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
-            MobileInput.SetKey(keyState, false);
+            MobileInput.SetButton(axesName, false);
 
             StopCoroutine(Holding());
 
@@ -29,8 +28,8 @@ namespace CustomInput
         {
             yield return new WaitForEndOfFrame();
 
-            MobileInput.SetKeyDown(keyState, false);
-            MobileInput.SetKey(keyState, true);
+            MobileInput.SetButtonDown(axesName, false);
+            MobileInput.SetButton(axesName, true);
 
             while (true) { yield return null; }
         }

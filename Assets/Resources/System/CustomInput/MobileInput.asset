@@ -12,11 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb42aa65c7ce6ad4c8a85537d112d476, type: 3}
   m_Name: MobileInput
   m_EditorClassIdentifier: 
-  floatAxis:
-  - keyState: 7
-    maxRange: 60
-    minRange: -60
-  - keyState: 8
-    maxRange: 30
-    minRange: 150
-  boolAxis: 040000000500000006000000
+  joySticks:
+  - axesName: Move
+    actDegree: 50
+  buttons:
+  - axesName: Attack
+  - axesName: Jump
+  - axesName: Dash

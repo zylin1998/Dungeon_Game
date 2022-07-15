@@ -1,112 +1,59 @@
-using System;   
-using UnityEngine;
-
 namespace CustomInput
 {
     public static class KeyManager
     {
         public static KeyConfigAsset keyConfigAsset;
 
-        public static string horizontal = "Horizontal";
-        public static string vertical = "Veritcal";
-
-        private static KeyInput keyBoardInput;
-        private static KeyInput joyStickInput;
+        public static InputList keyBoardInput { get; private set; }
+        public static InputList joyStickInput { get; private set; }
 
         private static bool hasKeyBoard;
         private static bool hasJoyStick;
-
-        private static Vector2 actionDirect = Vector2.zero;
 
         public static void Initialize(KeyConfigAsset asset) 
         {
             keyConfigAsset = asset;
 
-            keyBoardInput = keyConfigAsset[KeyInput.EInputType.KeyBoard];
-            joyStickInput = keyConfigAsset[KeyInput.EInputType.JoyStick];
+            keyBoardInput = keyConfigAsset[InputList.EInputType.KeyBoard];
+            joyStickInput = keyConfigAsset[InputList.EInputType.JoyStick];
 
             hasKeyBoard = keyBoardInput != null;
             hasJoyStick = joyStickInput != null;
         }
 
-        #region Get Key OverLoad
-
-        public static bool GetKey(string keyState) 
+        public static bool GetKey(string axesName)
         {
-            return GetKey((KeyState)Enum.Parse(typeof(KeyState), keyState));
+            var keyBoard = hasKeyBoard ? keyBoardInput[axesName].GetKey : false;
+            var joyStick = hasJoyStick ? joyStickInput[axesName].GetKey : false;
+
+            return keyBoard || joyStick;
         }
 
-        public static bool GetKey(KeyState keyState) 
+        public static bool GetKeyDown(string axesName)
         {
-            var keyBoard = hasKeyBoard ? keyBoardInput[keyState].KeyCode : KeyCode.None;
-            var joyStick = hasJoyStick ? joyStickInput[keyState].KeyCode : KeyCode.None;
+            var keyBoard = hasKeyBoard ? keyBoardInput[axesName].GetKeyDown : false;
+            var joyStick = hasJoyStick ? joyStickInput[axesName].GetKeyDown : false;
 
-            var isKeyboardPress = keyBoard == KeyCode.None ? false : Input.GetKey(keyBoard);
-            var isJoyStickPress = keyBoard == KeyCode.None ? false : Input.GetKey(joyStick);
-
-            return isKeyboardPress || isJoyStickPress;
+            return keyBoard || joyStick;
         }
 
-        #endregion
-
-        #region Get Key Down OverLoad
-
-        public static bool GetKeyDown(string keyState)
+        public static bool GetKeyUp(string axesName)
         {
-            return GetKeyDown((KeyState)Enum.Parse(typeof(KeyState), keyState));
+            var keyBoard = hasKeyBoard ? keyBoardInput[axesName].GetKeyUp : false;
+            var joyStick = hasJoyStick ? joyStickInput[axesName].GetKeyUp : false;
+
+            return keyBoard || joyStick;
         }
-
-        public static bool GetKeyDown(KeyState keyState)
-        {
-            var keyBoard = hasKeyBoard ? keyBoardInput[keyState].KeyCode : KeyCode.None;
-            var joyStick = hasJoyStick ? joyStickInput[keyState].KeyCode : KeyCode.None;
-
-            var isKeyboardPress = keyBoard == KeyCode.None ? false : Input.GetKeyDown(keyBoard);
-            var isJoyStickPress = keyBoard == KeyCode.None ? false : Input.GetKeyDown(joyStick);
-
-            return isKeyboardPress || isJoyStickPress;
-        }
-
-        #endregion
-
-        #region Get Key Up OverLoad
-
-        public static bool GetKeyUp(string keyState)
-        {
-            return GetKeyUp((KeyState)Enum.Parse(typeof(KeyState), keyState));
-        }
-
-        public static bool GetKeyUp(KeyState keyState)
-        {
-            var keyBoard = hasKeyBoard ? keyBoardInput[keyState].KeyCode : KeyCode.None;
-            var joyStick = hasJoyStick ? joyStickInput[keyState].KeyCode : KeyCode.None;
-
-            var isKeyboardPress = keyBoard == KeyCode.None ? false : Input.GetKeyUp(keyBoard);
-            var isJoyStickPress = keyBoard == KeyCode.None ? false : Input.GetKeyUp(joyStick);
-
-            return isKeyboardPress || isJoyStickPress;
-        }
-
-        #endregion
 
         #region GetAxis
 
-        public static float GetAxis(string axis) 
+        public static float GetAxis(string axesName) 
         {
-            if (actionDirect.x == 0 && GetKey(KeyState.Right)) actionDirect.x = 1;
-            if (actionDirect.x == 0 && GetKey(KeyState.Left)) actionDirect.x = -1;
+            var keyBoard = hasKeyBoard ? keyBoardInput[axesName].Axes : 0;
+            var joyStick = hasJoyStick ? joyStickInput[axesName].Axes : 0;
 
-            if (actionDirect.x == 1 && !GetKey(KeyState.Right)) actionDirect.x = 0;
-            if (actionDirect.x == -1 && !GetKey(KeyState.Left)) actionDirect.x = 0;
-
-            if (actionDirect.y == 0 && GetKey(KeyState.Up)) actionDirect.y = 1;
-            if (actionDirect.y == 0 && GetKey(KeyState.Down)) actionDirect.y = -1;
-
-            if (actionDirect.y == 1 && !GetKey(KeyState.Up)) actionDirect.y = 0;
-            if (actionDirect.y == -1 && !GetKey(KeyState.Down)) actionDirect.y = 0;
-
-            if (axis.ToLower() == horizontal.ToLower()) { return actionDirect.x; }
-            if (axis.ToLower() == vertical.ToLower()) { return actionDirect.y; }
+            if (keyBoard != 0) { return keyBoard; }
+            if (joyStick != 0) { return joyStick; }
 
             return 0;
         }

@@ -1,6 +1,7 @@
 using UnityEngine;
 using Cinemachine;
 using ComponentPool;
+using RoleSystem;
 
 public class CameraFocus : MonoBehaviour
 {

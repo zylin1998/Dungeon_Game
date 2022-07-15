@@ -48,6 +48,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 5116495136788819877}
     m_Modifications:
     - target: {fileID: 1771578784760504580, guid: 8001215fd1493e047879a3cce811f294, type: 3}
+      propertyPath: axesName
+      value: Dash
+      objectReference: {fileID: 0}
+    - target: {fileID: 1771578784760504580, guid: 8001215fd1493e047879a3cce811f294, type: 3}
       propertyPath: keyState
       value: 6
       objectReference: {fileID: 0}
@@ -161,6 +165,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 5116495136788819877}
     m_Modifications:
+    - target: {fileID: 7549932638771015578, guid: ba5ef67fb71d29f4f8b0227b877d6b71, type: 3}
+      propertyPath: axesName
+      value: Move
+      objectReference: {fileID: 0}
     - target: {fileID: 7792143120129014356, guid: ba5ef67fb71d29f4f8b0227b877d6b71, type: 3}
       propertyPath: m_Name
       value: UI_Virtual_JoyStick
@@ -368,6 +376,10 @@ PrefabInstance:
       value: Button_Attack
       objectReference: {fileID: 0}
     - target: {fileID: 4778809892334309275, guid: cc5ccc99cfbd2084e97ed98d7b5ec7af, type: 3}
+      propertyPath: axesName
+      value: Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 4778809892334309275, guid: cc5ccc99cfbd2084e97ed98d7b5ec7af, type: 3}
       propertyPath: keyState
       value: 4
       objectReference: {fileID: 0}
@@ -484,6 +496,10 @@ PrefabInstance:
     - target: {fileID: 2937156435190555163, guid: c18fa0f218903b84396ff7daab8ec20c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3512766055681926918, guid: c18fa0f218903b84396ff7daab8ec20c, type: 3}
+      propertyPath: axesName
+      value: Jump
       objectReference: {fileID: 0}
     - target: {fileID: 3512766055681926918, guid: c18fa0f218903b84396ff7daab8ec20c, type: 3}
       propertyPath: keyState

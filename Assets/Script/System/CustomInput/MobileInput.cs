@@ -9,13 +9,8 @@ namespace CustomInput
 
         private static bool hasAsset;
 
-        public static float angle { get; set; }
-        public static bool isDrag { get; set; }
-
-        private static FloatAxis[] floatAxis;
-        public static BoolAxis[] boolAxis;
-
-        private static float absAngle => Mathf.Abs(angle);
+        private static JoyStickAxes[] joySticks;
+        private static ButtonAxis[] buttons;
 
         public static void Initialize(MobileInputAsset asset) 
         {
@@ -23,88 +18,64 @@ namespace CustomInput
 
             hasAsset = mobileInputAsset != null;
 
-            floatAxis = asset.GetFloatAxis();
-            boolAxis = asset.GetBoolAxis();
+            joySticks = asset.GetJoyStickAxes();
+            buttons = asset.GetButtonAxes();
         }
 
-        public static float horizontal
+        public static JoyStickAxes GetJoyStick(string axesName) 
         {
-            get
-            {
-                if (!hasAsset) { return 0; }
-
-                if (absAngle <= 40 && absAngle >= 0) { return 1f; }
-
-                if (absAngle >= 130 && absAngle <= 180) { return -1f; }
-
-                return 0;
-            }
-        }
-
-        public static float vertical
-        {
-            get
-            {
-                if (!hasAsset) { return 0; }
-
-                if (absAngle < 40 || absAngle > 140) { return 0; }
-
-                if (angle > 0) { return 1; }
-
-                if (angle < 0) { return -1; }
-
-                return 0;
-            }
+            return joySticks.Where(joystick => joystick.AxesName == axesName).FirstOrDefault();
         }
 
         #region Get Key
 
-        public static bool GetKeyDown(KeyState keyState)
+        public static bool GetButtonDown(string axesName)
         {
             if (!hasAsset) { return false; }
 
-            return boolAxis.Where(axis => axis.KeyState == keyState).First().KeyDown;
+            return buttons.Where(axis => axis.AxesName == axesName).First().KeyDown;
         }
 
-        public static bool GetKey(KeyState keyState) 
+        public static bool GetButton(string axesName) 
         {
             if (!hasAsset) { return false; }
 
-            return boolAxis.Where(axis => axis.KeyState == keyState).First().Key;
+            return buttons.Where(axis => axis.AxesName == axesName).First().Key;
         }
 
-        public static bool GetKeyUp(KeyState keyState)
+        public static bool GetButtonUp(string axesName)
         {
             if (!hasAsset) { return false; }
 
-            return boolAxis.Where(axis => axis.KeyState == keyState).First().KeyUp;
+            return buttons.Where(axis => axis.AxesName == axesName).First().KeyUp;
         }
 
         #endregion
 
         #region Set Key
 
-        public static void SetKeyDown(KeyState keyState, bool isPress)
+        public static void SetButtonDown(string axesName, bool isPress)
         {
             if (!hasAsset) { return; }
 
-            boolAxis.Where(axis => axis.KeyState == keyState).First().KeyDown = isPress;
+            buttons.Where(axis => axis.AxesName == axesName).First().KeyDown = isPress;
         }
 
-        public static void SetKey(KeyState keyState, bool isPress)
+        public static void SetButton(string axesName, bool isPress)
         {
             if (!hasAsset) { return; }
 
-            boolAxis.Where(axis => axis.KeyState == keyState).First().Key = isPress;
+            buttons.Where(axis => axis.AxesName == axesName).First().Key = isPress;
         }
 
-        public static void SetKeyUp(KeyState keyState, bool isPress)
+        public static void SetButtonUp(string axesName, bool isPress)
         {
             if (!hasAsset) { return; }
 
-            boolAxis.Where(axis => axis.KeyState == keyState).First().KeyUp = isPress;
+            buttons.Where(axis => axis.AxesName == axesName).First().KeyUp = isPress;
         }
 
         #endregion
+
     }
 }

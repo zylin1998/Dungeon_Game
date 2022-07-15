@@ -9,15 +9,24 @@ namespace CustomInput
     {
         [SerializeField]
         private Transform content;
+        [SerializeField]
+        private string axesName;
+
+        private JoyStickAxes axes;
         
         private void Awake()
         {
             Components.Add(this, "Mobile_JoyStick", EComponentGroup.Script);
         }
 
+        private void Start()
+        {
+            axes = MobileInput.GetJoyStick(axesName);
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
-            MobileInput.isDrag = true;
+            axes.isDrag = true;
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -26,13 +35,13 @@ namespace CustomInput
             {
                 var direction = this.content.localPosition.normalized;
 
-                MobileInput.angle = Vector2.SignedAngle(Vector2.right, direction);
+                axes.angle = Vector2.SignedAngle(Vector2.right, direction);
             }
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            MobileInput.isDrag = false;
+            axes.isDrag = false;
         }
     }
 }

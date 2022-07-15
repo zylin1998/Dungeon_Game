@@ -3,89 +3,91 @@ using System.Collections.Generic;
 using UnityEngine;
 using ComponentPool;
 
-public class CharacterState : MonoBehaviour
+namespace RoleSystem
 {
-
-    [SerializeField] private string[] characterNames;
-    [SerializeField] private int characterState;
-    
-    private GameObject parent;
-    private List<GameObject> characters;
-    private Transform currentCharacter;
-
-    private TeleportSpots teleportSpots;
-    private CameraFocus cameraController;
-
-    public Transform CurrentCharacter => currentCharacter;
-
-    private void Awake()
+    public class CharacterState : MonoBehaviour
     {
-        Components.Add(this, "CharacterState", EComponentGroup.Script);
+        [SerializeField] private string[] characterNames;
+        [SerializeField] private int characterState;
 
-        characters = new List<GameObject>();
-    }
+        private GameObject parent;
+        private List<GameObject> characters;
+        private Transform currentCharacter;
 
-    private void Start()
-    {
-        teleportSpots = Components.GetStaff<TeleportSpots>("TeleportSpots", EComponentGroup.Script);
-        cameraController = Components.GetStaff<CameraFocus>("CameraFocus", EComponentGroup.Script);
+        private TeleportSpots teleportSpots;
+        private CameraFocus cameraController;
 
-        Initialized();
-    }
+        public Transform CurrentCharacter => currentCharacter;
 
-    private void Initialized()
-    {
-        parent = GameObject.Find("Player");
-        
-        if (characterNames.Length <= 0) { return; }
-
-        foreach (string name in characterNames)
+        private void Awake()
         {
-            GameObject added = Resources.Load<GameObject>(Path.Combine("Character", name));
+            Components.Add(this, "CharacterState", EComponentGroup.Script);
 
-            if (added != null) { characters.Add(added); }
+            characters = new List<GameObject>();
         }
 
-        Invoke("SetCharacter", 0.05f);
-    }
+        private void Start()
+        {
+            teleportSpots = Components.GetStaff<TeleportSpots>("TeleportSpots", EComponentGroup.Script);
+            cameraController = Components.GetStaff<CameraFocus>("CameraFocus", EComponentGroup.Script);
 
-    private void SetCharacter() 
-    {
-        Transform temp = currentCharacter == null ? null : currentCharacter;
-
-        GameObject targetCharacter = null;
-
-        var character = characters[characterState];
-        var position = new Vector2(teleportSpots.CurrentSpot.position.x, teleportSpots.CurrentSpot.position.y + 0.4f);
-        var rotation = Quaternion.identity;
-
-        if (parent != null) 
-        { 
-            targetCharacter = Instantiate(character, position, rotation, parent.transform);
-
-            targetCharacter.name = character.name;
+            Initialized();
         }
 
-        if (targetCharacter != null) 
-        { 
-            currentCharacter = targetCharacter.transform;
+        private void Initialized()
+        {
+            parent = GameObject.Find("Player");
 
-            targetCharacter.tag = "Player";
-            
-            targetCharacter.GetComponent<CharacterController>().IsFlip = teleportSpots.Flip;
+            if (characterNames.Length <= 0) { return; }
+
+            foreach (string name in characterNames)
+            {
+                GameObject added = Resources.Load<GameObject>(Path.Combine("Character", name));
+
+                if (added != null) { characters.Add(added); }
+            }
+
+            Invoke("SetCharacter", 0.05f);
         }
 
-        if (currentCharacter != null) { cameraController.ChangeFocus(); }
+        private void SetCharacter()
+        {
+            Transform temp = currentCharacter == null ? null : currentCharacter;
 
-        if (temp != null) { Destroy(temp); }
-    }
+            GameObject targetCharacter = null;
 
-    public void ChangeCharacter(int state) 
-    {
-        if(state == characterState) { return; }
+            var character = characters[characterState];
+            var position = new Vector2(teleportSpots.CurrentSpot.position.x, teleportSpots.CurrentSpot.position.y + 0.425f);
+            var rotation = Quaternion.identity;
 
-        characterState = state;
+            if (parent != null)
+            {
+                targetCharacter = Instantiate(character, position, rotation, parent.transform);
 
-        SetCharacter();
+                targetCharacter.name = character.name;
+            }
+
+            if (targetCharacter != null)
+            {
+                currentCharacter = targetCharacter.transform;
+
+                targetCharacter.tag = "Player";
+
+                targetCharacter.GetComponent<RoleSystem.PlayerController>().IsFlip = teleportSpots.Flip;
+            }
+
+            if (currentCharacter != null) { cameraController.ChangeFocus(); }
+
+            if (temp != null) { Destroy(temp); }
+        }
+
+        public void ChangeCharacter(int state)
+        {
+            if (state == characterState) { return; }
+
+            characterState = state;
+
+            SetCharacter();
+        }
     }
 }

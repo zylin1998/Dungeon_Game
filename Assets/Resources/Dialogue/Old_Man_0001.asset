@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 578ba7cc317fe5143b6d28c24a3ca9a6, type: 3}
+  m_Name: Old_Man_0001
+  m_EditorClassIdentifier: 
+  conversation:
+  - name: "\u8001\u4EBA"
+    sentence: "\u9F41\u9F41\u9F41\uFF0C\u96E3\u5F97\u9047\u898B\u5916\u4F86\u7684\u5E74\u8F15\u4EBA"
+  - name: "\u8001\u4EBA"
+    sentence: "\u8ACB\u554F\u6709\u751A\u9EBC\u4E8B\u55CE\uFF1F"

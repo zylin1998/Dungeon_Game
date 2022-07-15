@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 856b8d1dac90cbb4984b78d9436bcd00, type: 3}
+  m_Name: White Bottle
+  m_EditorClassIdentifier: 
+  itemName: White Bottle
+  icon: {fileID: 21300204, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
+  category: 1
+  detail: "\u4E00\u74F6\u5167\u542B\u767D\u8272\u98F2\u54C1\u7684\u74F6\u5B50\uFF0C\u4F7F\u7528\u5F8C\u80FD\u56DE\u5FA930MP"
+  isDefaultItem: 0
+  sellPrice: 0
+  perchasePrice: 0
+  healMP: 30

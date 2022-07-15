@@ -1,36 +1,55 @@
+using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class WallCheckSensor : MonoBehaviour
+namespace RoleSystem
 {
-    private CharacterController controller;
-    
-    ContactPoint2D[] contactPoint = new ContactPoint2D[3];
-
-    private void Start()
+    public class WallCheckSensor : MonoBehaviour
     {
-        var parent = this.transform.parent;
+        private PlayerController controller;
 
-        controller = parent.GetComponent<CharacterController>();
-    }
+        private Collider2D player;
 
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.isTrigger) { return; }
-
-        collision.GetContacts(contactPoint);
-
-        foreach (ContactPoint2D contact in contactPoint)
+        private void Start()
         {
-            //Debug.Log($"{contact.collider.name} hit {contact.otherCollider.name} {contact.normal.x}.");
-            //Debug.DrawRay(contact.point, contact.normal, Color.white);
-            if (contact.normal.x == 0) { continue; }
+            var parent = this.transform.parent;
 
-            if (controller != null) { controller.IsCollision = contact.normal.x; }
+            player = parent.GetComponent<Collider2D>();
+            controller = parent.GetComponent<PlayerController>();
         }
-    }
 
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (controller != null) { controller.IsCollision = 0; }
+        private void OnTriggerStay2D(Collider2D collision)
+        {
+            if (collision.isTrigger) { return; }
+
+            var contactPoint = new List<ContactPoint2D>();
+
+            player.GetContacts(contactPoint);
+
+            var contactWall = contactPoint.Where(point => point.normal.x != 0).ToArray();
+
+            var allSide = 0f;
+
+            foreach (ContactPoint2D point in contactWall) 
+            {
+                //Debug.DrawRay(contactPoint[0].point, contactPoint[0].normal, Color.white);
+
+                var side = point.normal.x;
+
+                if (side != 0) { side = side > 0 ? 1f : -1f; }
+
+                allSide += side; 
+            }
+            
+            if (controller != null) 
+            {
+                controller.IsCollision = allSide;
+            }
+        }
+
+        private void OnTriggerExit2D(Collider2D collision)
+        {
+            if (controller != null) { controller.IsCollision = 0f   ; }
+        }
     }
 }

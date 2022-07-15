@@ -9,13 +9,13 @@ public class GameManager : MonoBehaviour
 {
     #region Singleton
 
-    public static GameManager manager;
+    public static GameManager Instance { get; private set; }
 
     private void Awake()
     {
-        if (manager != null) { return; }
+        if (Instance != null) { return; }
 
-        manager = this;
+        Instance = this;
 
         componentGroups = Components.Pool;
 
@@ -26,6 +26,16 @@ public class GameManager : MonoBehaviour
 
     [SerializeField]
     private List<Components.StaffGroup> componentGroups;
+
+    public QuestSystem.QuestPanel QuestPanel { get; private set; }
+
+    public bool dialogueMode { get; set; }
+    public bool inventoryMode { get; set; }
+    public bool questMode { get; set; }
+
+    public bool pause => dialogueMode || questMode || inventoryMode;
+    
+    #region Custom Input
 
 #if UNITY_STANDALONE_WIN
 
@@ -52,9 +62,6 @@ public class GameManager : MonoBehaviour
 
     private MobileInputAsset mobileInput;
 
-    [SerializeField]
-    private BoolAxis[] boolAxis;
-
     public void Initialize() 
     {
         mobileInput = Resources.Load<MobileInputAsset>(Path.Combine("System", "CustomInput", "MobileInput"));
@@ -68,4 +75,6 @@ public class GameManager : MonoBehaviour
     }
 
 #endif
+
+    #endregion
 }
