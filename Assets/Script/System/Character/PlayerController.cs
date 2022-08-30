@@ -65,6 +65,11 @@ namespace RoleSystem
             attackSenesor = this.GetComponentInChildren<AttackSensor>();
 
             actionDetail = characterDetail.ActionDetail;
+
+            health.SingleOnly();
+
+            PlayerInform.Instance.SetLife(health.NormalizedLife);
+            PlayerInform.Instance.SetMP(health.NormalizedMP);
         }
 
         #region °Ê§@©â¶H

@@ -7,56 +7,6 @@ namespace InventorySystem
 {
     public class Inventory : MonoBehaviour
     {
-        #region Item Stack
-
-        [System.Serializable]
-        public class ItemStack
-        {
-            [SerializeField]
-            private Item item;
-            [SerializeField]
-            private int count;
-
-            public Item Item => item;
-            public int Count => count;
-
-            protected ItemStack() { }
-
-            public ItemStack(Item item)
-            {
-                this.item = item;
-                this.count = 1;
-            }
-
-            public ItemStack(Item item, int count)
-            {
-                this.item = item;
-                this.count = count;
-            }
-
-            public void Increase()
-            {
-                this.count++;
-            }
-
-            public void Increase(int count)
-            {
-                this.count += count;
-            }
-
-            public void Decrease()
-            {
-                this.count--;
-            }
-
-            public void Decrease(int count)
-            {
-                this.count -= count;
-            }
-        }
-
-        #endregion
-
         #region Singleton
 
         public static Inventory Instance { get; private set; }
@@ -69,25 +19,29 @@ namespace InventorySystem
         }
 
         #endregion
-
+        
         [SerializeField]
-        private int gold;
-        [SerializeField]
-        private List<ItemStack> itemList = new List<ItemStack>();
+        private ItemPool itemPool;
 
-        public int Gold => gold;
-        public List<ItemStack> ItemList => itemList;
+        public ItemPool ItemPool => itemPool;
 
+        
         public Action<bool> OnItemChangedCallBack { get; set; }
 
         public void IncreaseGold(int reward)
         {
-            this.gold += reward;
+            this.itemPool.IncreaseCash(reward);
+
+            if (this.OnItemChangedCallBack != null) { this.OnItemChangedCallBack.Invoke(false); }
         }
 
-        public void DecreaseGold(int paid)
+        public bool DecreaseGold(int paid)
         {
-            this.gold -= paid;
+            bool success = this.itemPool.DecreaseCash(paid);
+
+            if (success && this.OnItemChangedCallBack != null) { this.OnItemChangedCallBack.Invoke(false); }
+
+            return success;
         }
 
         #region Add OverLoad
@@ -101,21 +55,17 @@ namespace InventorySystem
         {
             if (item.IsDefaultItem) { return false; }
 
-            var exist = this.itemList.Find(match => match.Item.Equals(item));
+            var stack = this.itemPool[item.ItemName];
 
-            var refresh = exist == null;
+            if (stack == null) { return false; } 
 
-            if (!refresh) { exist.Increase(count); }
+            var refresh = stack.Count == 0;
 
-            if (refresh)
-            {
-                this.itemList.Add(new ItemStack(item, count));
-                this.itemList.Sort((ItemStack s1, ItemStack s2) => Sort(s1.Item, s2.Item));
-            }
+            var success = stack.Increase(count);
 
-            if (this.OnItemChangedCallBack != null) { this.OnItemChangedCallBack.Invoke(refresh); }
+            if (success && this.OnItemChangedCallBack != null) { this.OnItemChangedCallBack.Invoke(refresh); }
 
-            return true;
+            return success;
         }
 
         #endregion
@@ -129,29 +79,44 @@ namespace InventorySystem
 
         public bool Remove(Item item, int count)
         {
-            var target = this.itemList.Find(match => match.Item.Equals(item));
+            var target = this.itemPool[item.ItemName];
 
             if (target == null) { return false; }
 
             var refresh = false;
 
-            target.Decrease(count);
+            var success = target.Decrease(count);
 
-            if (target.Count <= 0) { refresh = itemList.Remove(target); }
+            if (target.Count <= 0) { refresh = true; }
 
-            if (OnItemChangedCallBack != null) { OnItemChangedCallBack.Invoke(refresh); }
+            if (success && OnItemChangedCallBack != null) { OnItemChangedCallBack.Invoke(refresh); }
 
-            return true;
+            return success;
         }
 
         #endregion
 
-        #region List Sorting Func
+        #region Trade Function
 
-        private int Sort(Item i1, Item i2)
+        public bool Perchase(IItemPerchaseHandler item, int count) 
         {
-            return i1.Category != i2.Category ? (int)i1.Category - (int)i2.Category : i1.ItemName.CompareTo(i2.ItemName);
+            var paid = DecreaseGold(item.PerchasePrice * count);
+
+            if (paid) { this.Add(item as Item, count); }
+
+            return paid;
         }
+
+        public bool SoldOut(IItemSellHandler item, int count)
+        {
+            var success = Remove(item as Item);
+
+            if (success) { IncreaseGold(item.SellPrice * count); }
+
+            return success;
+        }
+
+        public bool IsEnough(int cost) { return cost <= itemPool.Cash; }
 
         #endregion
     }

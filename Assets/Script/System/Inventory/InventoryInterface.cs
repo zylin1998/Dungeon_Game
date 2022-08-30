@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace InventorySystem
 {
-    public interface IItemSellHandler 
+    public interface IItemSellHandler
     {
         public int SellPrice { get; }
 
@@ -15,6 +15,13 @@ namespace InventorySystem
     {
         public int PerchasePrice { get; }
 
-        public void SoldOut(int count);
+        public void Perchase(int count);
+    }
+
+    public interface ICategoryHandler
+    {
+        public void CategoryInitialize();
+
+        public void SelectCategory(ECategory category);
     }
 }

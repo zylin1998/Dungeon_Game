@@ -15,6 +15,8 @@ namespace RoleSystem
             scale = this.transform.localScale;
             actionDetail = this.characterDetail.ActionDetail;
 
+            health.Production();
+
             var enemy = LayerMask.NameToLayer("EnemyCollider");
             var player = LayerMask.NameToLayer("PlayerCollider");
 
@@ -91,7 +93,7 @@ namespace RoleSystem
 
         protected override void Dead()
         {
-            if(!health.dead) { return; }
+            if(!health.IsDead) { return; }
 
             isDead = true;
 
@@ -105,6 +107,8 @@ namespace RoleSystem
                 QuestManager.Instance.EnemyKillCallBack.Invoke(this.enemyName);
             }
 
+            InventorySystem.Inventory.Instance.IncreaseGold(10);
+
             Destroy(gameObject, 2.5f);
         }
 
@@ -112,7 +116,7 @@ namespace RoleSystem
         {
             health.Hurt(injury);
 
-            if (health.dead) 
+            if (health.IsDead) 
             {
                 StopAllCoroutines();
 

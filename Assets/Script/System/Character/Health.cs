@@ -7,48 +7,63 @@ namespace RoleSystem
     public class Health : MonoBehaviour
     {
         [SerializeField]
-        private CharacterDetailAsset characterDetail;
+        private CharacterDetailAsset detail;
+
         [SerializeField]
-        private float currentLife;
+        private PhysicalDetail physical;
         [SerializeField]
-        private float currentMP;
-        [SerializeField]
-        private float currentDamage;
-        [SerializeField]
-        private float currentDefend;
+        private WeaponDetail weapon;
 
-        private PhysicalDetail physicalDetail;
+        public bool IsDead { get; private set; }
 
-        public bool dead { get; private set; }
+        public float CurrentDamage => weapon.MuiltyDamage;
 
-        public float CurrentDamage => currentDamage;
+        public float NormalizedLife => physical.Life / detail.DefaultPhysical.Life;
+        public float NormalizedMP => physical.MP / detail.DefaultPhysical.MP;
 
-        private void Awake()
-        {
-            physicalDetail = characterDetail.PhysicalDetail;
-
-            currentLife = physicalDetail.Life;
-            currentMP = physicalDetail.MP;
-            currentDamage = physicalDetail.Damage;
-            currentDefend = physicalDetail.Defend;
-        }
+        public int WeaponLevel => weapon.Level;
+        public float WeaponMuiltilpe => weapon.Muiltiple[weapon.Level];
 
         public void Hurt(float injury) 
         {
-            float finalInjury = injury * (1 / (1 + currentDefend * 0.01f));
+            float finalInjury = injury * (1 / (1 + physical.Defend * 0.01f));
 
-            currentLife = Mathf.Clamp(currentLife - finalInjury, 0f, physicalDetail.Life);
+            physical.SetLife(Mathf.Clamp(physical.Life - finalInjury, 0f, detail.DefaultPhysical.Life));
 
-            if (currentLife <= 0) { dead = true; }
+            if (physical.IsDead) { IsDead = true; }
         }
 
         public bool UseSkill(float consume) 
         {
-            if (currentMP < consume) { return false; }
+            if (physical.MP < consume) { return false; }
 
-            currentMP = Mathf.Clamp(currentMP - consume, 0f, physicalDetail.MP);
+            physical.SetLife(Mathf.Clamp(physical.MP - consume, 0f, detail.DefaultPhysical.MP));
 
             return true;
+        }
+
+        public void UpgradeDamage() 
+        {
+            weapon.Upgrade();
+        }
+
+        public void SingleOnly() 
+        {
+            detail.SingleOnly(ref physical, ref weapon);
+        }
+
+        public void Production() 
+        {
+            detail.Production(ref physical, ref weapon);
+        }
+
+        public bool WeaponUpgrade() 
+        {
+            var canUpgrade = weapon.Level < weapon.MaxLevel && weapon.Level >= 0;
+
+            if (canUpgrade) { weapon.Upgrade(); }
+
+            return canUpgrade;
         }
     }
 }

@@ -19,8 +19,7 @@ namespace InventorySystem
 
         public override void SoldOut(int count)
         {
-            Inventory.Instance.Remove(this, count);
-            Inventory.Instance.IncreaseGold(sellPrice * count);
+            Inventory.Instance.SoldOut(this, count);
         }
     }
 }

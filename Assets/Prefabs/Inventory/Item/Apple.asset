@@ -17,4 +17,6 @@ MonoBehaviour:
   category: 1
   detail: "\u4E00\u9846\u5149\u6FA4\u4EAE\u9E97\u7684\u8CA7\u679C\uFF0C\u4F7F\u7528\u5F8C\u80FD\u56DE\u5FA930HP"
   isDefaultItem: 0
+  sellPrice: 30
+  perchasePrice: 50
   healHP: 30

@@ -15,7 +15,7 @@ namespace ComponentPool
         DisplayUI = 2,
         DiscribeUI = 3,
         FunctionUI = 4,
-        TeleportSpot = 5,
+        Spots = 5,
     }
 
     #endregion

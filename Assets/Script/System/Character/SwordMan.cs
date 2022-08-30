@@ -119,7 +119,7 @@ namespace RoleSystem
 
         protected override void Attack()
         {
-            if (playerInput.attack)
+            if (playerInput.attack && !pause)
             {
                 animator.Play("Attack");
 
@@ -130,7 +130,7 @@ namespace RoleSystem
 
         protected override void Dead()
         {
-            if(!health.dead) { return; }
+            if(!health.IsDead) { return; }
 
             dead = true;
 
@@ -140,6 +140,8 @@ namespace RoleSystem
         public override void Hurt(float injury)
         {
             health.Hurt(injury);
+
+            PlayerInform.Instance.SetLife(health.NormalizedLife);
         }
 
         #endregion

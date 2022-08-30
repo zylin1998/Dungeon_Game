@@ -21,8 +21,13 @@ MonoBehaviour:
     maxJumpHold: 0
     unControllableAction:
     - Attack1
-  physicalDetail:
+  defaultPhysical:
     life: 30
-    mp: 0
-    damage: 17
+    mp: 30
     defend: 5
+  defaultWeapon:
+    level: 0
+    maxLevel: 0
+    damage: 15
+    muiltiple:
+    - 1

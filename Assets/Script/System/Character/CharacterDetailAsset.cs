@@ -43,14 +43,65 @@ namespace RoleSystem
         [SerializeField]
         private float mp;
         [SerializeField]
-        private float damage;
-        [SerializeField]
         private float defend;
 
         public float Life => life;
         public float MP => mp;
-        public float Damage => damage;
         public float Defend => defend;
+
+        public bool IsDead => life == 0;
+
+        public PhysicalDetail() { }
+
+        public PhysicalDetail(PhysicalDetail detail) 
+        {
+            this.life = detail.Life;
+            this.mp = detail.MP;
+            this.defend = detail.Defend;
+        }
+
+        public void SetLife(float value) => this.life = value; 
+
+        public void SetMP(float value) => this.mp = value;
+
+        public void SetDefend(float value) => this.defend = value;
+    }
+
+    #endregion
+
+    #region Weapon Detail Class
+    
+    [System.Serializable]
+    public class WeaponDetail
+    {
+        [SerializeField]
+        private int level;
+        [SerializeField]
+        private int maxLevel;
+        [SerializeField]
+        private float damage;
+        [SerializeField]
+        private float[] muiltiple;
+
+        public int Level => this.level;
+        public int MaxLevel => this.maxLevel;
+        public bool IsMax => this.level == this.maxLevel;
+        public float Damage => this.damage;
+        public float[] Muiltiple => this.muiltiple;
+        public float Rate => this.muiltiple[this.level];
+        public float MuiltyDamage => this.damage * this.muiltiple[level];
+
+        protected WeaponDetail() { }
+
+        public WeaponDetail(WeaponDetail weapon)
+        {
+            this.level = weapon.level;
+            this.maxLevel = weapon.maxLevel;
+            this.damage = weapon.damage;
+            this.muiltiple = weapon.muiltiple;
+        }
+
+        public void Upgrade() => this.level++;
     }
 
     #endregion
@@ -58,14 +109,65 @@ namespace RoleSystem
     [CreateAssetMenu(fileName = "Character Detail Asset", menuName = "Character/Character Detail Asset", order = 1)]
     public class CharacterDetailAsset : ScriptableObject
     {
+        #region Packed Class
+
+        [System.Serializable]
+        public class Packed 
+        {
+            public PhysicalDetail physical;
+            public WeaponDetail weapon;
+
+            protected Packed() { }
+
+            public Packed(CharacterDetailAsset asset) 
+            {
+                physical = asset.SinglePhysical;
+                weapon = asset.SingleWeapon;
+            }
+        }
+
+        #endregion
+
         [Header("Action Detail")]
         [SerializeField]
         private ActionDetail actionDetail;
         [Header("Physical Detail")]
         [SerializeField]
-        private PhysicalDetail physicalDetail;
+        private PhysicalDetail defaultPhysical;
+        [Header("Weapon Detail")]
+        [SerializeField]
+        private WeaponDetail defaultWeapon;
+        
+        public PhysicalDetail SinglePhysical { get; private set; }
+        public WeaponDetail SingleWeapon { get; private set; }
+        
+        public Packed Pack => new Packed(this);
 
         public ActionDetail ActionDetail => actionDetail;
-        public PhysicalDetail PhysicalDetail => physicalDetail;
+        public PhysicalDetail DefaultPhysical => defaultPhysical;
+
+        public void Initialize()
+        {
+            SinglePhysical = new PhysicalDetail(defaultPhysical);
+            SingleWeapon = new WeaponDetail(defaultWeapon);
+        }
+
+        public void Initialize(Packed packed) 
+        {
+            SinglePhysical = packed.physical;
+            SingleWeapon = packed.weapon;
+        }
+
+        public void SingleOnly(ref PhysicalDetail physical, ref WeaponDetail weapon) 
+        {
+            physical = SinglePhysical;
+            weapon = SingleWeapon;
+        }
+
+        public void Production(ref PhysicalDetail physical, ref WeaponDetail weapon)
+        {
+            physical = new PhysicalDetail(defaultPhysical);
+            weapon = new WeaponDetail(defaultWeapon);
+        }
     }
 }

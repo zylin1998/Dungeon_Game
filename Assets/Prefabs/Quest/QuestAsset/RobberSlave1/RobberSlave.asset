@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: RobberSlave
   m_EditorClassIdentifier: 
   giver: Old_Man
-  targetScene: TownEntry
+  targetScene: Village
   quest:
     title: "\u8D95\u8D70\u76DC\u8CCA"
     description: "\u8D95\u8D70\u5F98\u5F8A\u5728\u6751\u838A\u65E5\u53E3\u7684\u76DC\u8CCA"

@@ -28,14 +28,12 @@ namespace InventorySystem
 
         public override void Perchase(int count)
         {
-            Inventory.Instance.Add(this, count);
-            Inventory.Instance.DecreaseGold(perchasePrice * count);
+            Inventory.Instance.Perchase(this, count);
         }
 
         public override void SoldOut(int count)
         {
-            Inventory.Instance.Remove(this, count);
-            Inventory.Instance.IncreaseGold(sellPrice * count);
+            Inventory.Instance.SoldOut(this, count);
         }
     }
 }

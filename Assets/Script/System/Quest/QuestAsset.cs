@@ -53,6 +53,12 @@ namespace QuestSystem
         private QuestManager questManager => QuestManager.Instance;
         private DialogueTrigger dialogueTrigger => DialogueTrigger.Instance;
 
+        public void Initialize() 
+        {
+            this.questState = EQuestState.Start;
+            this.goal.Initialize();
+        }
+
         public void Initialize(QuestAsset.Packed pack) 
         {
             this.questState = pack.questState;
@@ -119,8 +125,9 @@ namespace QuestSystem
     [CreateAssetMenu(fileName = "Quest Asset", menuName = "Quest/Quest Asset", order = 1)]
     public class QuestAsset : ScriptableObject
     {
-        #region Data Packed Class
+        #region Quest Packed
 
+        [System.Serializable]
         public class Packed
         {
             public string quest;
@@ -157,9 +164,8 @@ namespace QuestSystem
         public Packed Pack => new Packed(this);
         public QuestAsset[] NewQuestAsset => newQuestAsset;
 
-        public void Initialize(Packed pack) 
-        {
-            quest.Initialize(pack);
-        }
+        public void Initialize() => quest.Initialize();
+
+        public void Initialize(Packed pack) => quest.Initialize(pack);
     }
 }

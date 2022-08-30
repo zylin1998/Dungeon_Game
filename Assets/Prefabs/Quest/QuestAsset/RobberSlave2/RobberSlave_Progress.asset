@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 578ba7cc317fe5143b6d28c24a3ca9a6, type: 3}
+  m_Name: RobberSlave_Progress
+  m_EditorClassIdentifier: 
+  conversation:
+  - name: "\u8001\u4EBA"
+    sentence: "\u90A3\u5C31\u62DC\u8A17\u60A8\u8D95\u8D70\u90A3\u4E9B\u76DC\u8CCA\u4E86"

@@ -2,6 +2,7 @@ using System.IO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using ComponentPool;
 using CustomInput;
 
@@ -22,18 +23,23 @@ public class GameManager : MonoBehaviour
         Initialize();
     }
 
-#endregion
+    #endregion
 
+    [SerializeField]
+    [Header("玩家資料（存檔）")]
+    private UserData userData;
+    [Header("物件池")]
     [SerializeField]
     private List<Components.StaffGroup> componentGroups;
 
-    public QuestSystem.QuestPanel QuestPanel { get; private set; }
+    public UserData UserData => userData;
 
     public bool dialogueMode { get; set; }
     public bool inventoryMode { get; set; }
     public bool questMode { get; set; }
+    public bool shopMode { get; set; }
 
-    public bool pause => dialogueMode || questMode || inventoryMode;
+    public bool pause => dialogueMode || questMode || inventoryMode || shopMode;
     
     #region Custom Input
 
@@ -77,4 +83,14 @@ public class GameManager : MonoBehaviour
 #endif
 
     #endregion
+
+    public void SaveUserData() 
+    {
+        var scene = SceneManager.GetActiveScene().name;
+        var spot = Components.GetStaff<SpotManager>("SpotManager", EComponentGroup.Spots).CurrentSpot.SpotName;
+
+        userData.SetData(scene, spot);
+
+        SaveSystem.SaveJsonData(userData.Pack, Path.Combine(Application.dataPath, "SaveData"), "UserData.json");
+    }
 }

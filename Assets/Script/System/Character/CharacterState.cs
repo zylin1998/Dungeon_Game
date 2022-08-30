@@ -14,7 +14,6 @@ namespace RoleSystem
         private List<GameObject> characters;
         private Transform currentCharacter;
 
-        private TeleportSpots teleportSpots;
         private CameraFocus cameraController;
 
         public Transform CurrentCharacter => currentCharacter;
@@ -28,7 +27,6 @@ namespace RoleSystem
 
         private void Start()
         {
-            teleportSpots = Components.GetStaff<TeleportSpots>("TeleportSpots", EComponentGroup.Script);
             cameraController = Components.GetStaff<CameraFocus>("CameraFocus", EComponentGroup.Script);
 
             Initialized();
@@ -57,7 +55,7 @@ namespace RoleSystem
             GameObject targetCharacter = null;
 
             var character = characters[characterState];
-            var position = new Vector2(teleportSpots.CurrentSpot.position.x, teleportSpots.CurrentSpot.position.y + 0.425f);
+            var position = SpotManager.Instance.CurrentSpot.Position + new Vector2(0, 0.425f);
             var rotation = Quaternion.identity;
 
             if (parent != null)
@@ -73,7 +71,7 @@ namespace RoleSystem
 
                 targetCharacter.tag = "Player";
 
-                targetCharacter.GetComponent<RoleSystem.PlayerController>().IsFlip = teleportSpots.Flip;
+                targetCharacter.GetComponent<PlayerController>().IsFlip = SpotManager.Instance.CurrentSpot.Flip;
             }
 
             if (currentCharacter != null) { cameraController.ChangeFocus(); }

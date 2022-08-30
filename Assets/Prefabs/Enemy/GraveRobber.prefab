@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 6136475067173589506}
   - component: {fileID: 7787341377810741143}
   - component: {fileID: 6136475067173589516}
-  - component: {fileID: 6136475067173589507}
   - component: {fileID: -7954013425355070133}
+  - component: {fileID: 6136475067173589507}
   m_Layer: 7
   m_Name: GraveRobber
   m_TagString: Enemy
@@ -86,6 +86,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 1.65}
   m_EdgeRadius: 0
+--- !u!114 &-7954013425355070133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6136475067173589505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 028a7a197092330438f1c248999913e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  detail: {fileID: 11400000, guid: 409a31b8520710f4cae3c356fa9cf67d, type: 2}
 --- !u!114 &6136475067173589507
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -107,23 +120,6 @@ MonoBehaviour:
   targetSensor: {fileID: 6136475067533857683}
   attackSensorWeapon: {fileID: 6810957385599104504}
   attackSensorBody: {fileID: 5019367987345162220}
---- !u!114 &-7954013425355070133
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6136475067173589505}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 028a7a197092330438f1c248999913e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  characterDetail: {fileID: 11400000, guid: 409a31b8520710f4cae3c356fa9cf67d, type: 2}
-  currentLife: 0
-  currentMP: 0
-  currentDamage: 0
-  currentDefend: 0
 --- !u!1 &6136475067533857680
 GameObject:
   m_ObjectHideFlags: 0

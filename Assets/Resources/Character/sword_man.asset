@@ -22,8 +22,17 @@ MonoBehaviour:
     unControllableAction:
     - Attack
     - Dash
-  physicalDetail:
+  defaultPhysical:
     life: 100
     mp: 85
-    damage: 15
     defend: 12
+  defaultWeapon:
+    level: 0
+    maxLevel: 4
+    damage: 15
+    muiltiple:
+    - 1
+    - 1.2
+    - 1.5
+    - 1.9
+    - 2.5

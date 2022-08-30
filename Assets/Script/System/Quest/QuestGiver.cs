@@ -45,7 +45,7 @@ namespace QuestSystem
 
             quest = progressQuests.Length >= 1 ? progressQuests.First() : standByQuests.First();
 
-            quest.QuestEndCallBack = new Quest.QuestEndHandler(delegate() 
+            quest.QuestEndCallBack = delegate() 
             {
                 if(quest != null) 
                 {
@@ -55,7 +55,7 @@ namespace QuestSystem
                     trigger.TriggerCallBackReset();
                     questManager.FininshQuest(quest);
                 }
-            });
+            };
 
             if (trigger != null) { trigger.OnTriggeredCallBack = new NPCTrigger.TriggeredHandler(quest.Invoke); }
         }

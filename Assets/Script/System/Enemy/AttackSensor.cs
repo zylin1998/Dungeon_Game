@@ -22,7 +22,7 @@ namespace RoleSystem
 
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (collision.CompareTag(targetTag) && !collision.GetComponent<Health>().dead)
+            if (collision.CompareTag(targetTag) && !collision.GetComponent<Health>().IsDead)
             {
                 collision.GetComponent<IHurtAction>().Hurt(damage);
             }

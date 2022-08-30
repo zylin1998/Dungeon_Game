@@ -16,9 +16,9 @@ namespace QuestSystem
 
             public Packed() { }
 
-            public Packed(QuestAsset.Packed[] pack) 
+            public Packed(QuestListAsset asset) 
             {
-                this.quests = pack;
+                this.quests = asset.quests.ToList().ConvertAll(quest => quest.Pack).ToArray();
             }
         }
 
@@ -33,15 +33,19 @@ namespace QuestSystem
 
         public QuestAsset[] this[string targetScene] => this.quests.Where(quest => quest.TargetScene == targetScene).ToArray();
 
-        public Packed Pack => new Packed(this.GetQuestNames());
+        public Packed Pack => new Packed(this);
 
         public void Initialize(QuestAsset[] quests) 
         {
             this.quests = quests;
+
+            this.quests.ToList().ForEach(quest => quest.Initialize());
         }
 
         public void Initialize(Packed pack) 
         {
+            if (pack == null) { return; }
+
             var quests = new List<QuestAsset>();
 
             foreach (QuestAsset.Packed quest in pack.quests)
@@ -54,18 +58,6 @@ namespace QuestSystem
             }
 
             this.quests = quests.ToArray();
-        }
-
-        private QuestAsset.Packed[] GetQuestNames() 
-        {
-            var questNames = new List<QuestAsset.Packed>();
-
-            foreach (QuestAsset asset in quests) 
-            {
-                questNames.Add(asset.Pack);
-            }
-
-            return questNames.ToArray();
         }
     }
 }

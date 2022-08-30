@@ -230,11 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 028a7a197092330438f1c248999913e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  characterDetail: {fileID: 11400000, guid: c2edaa33aa8873b4c9c055a7ec8d7cd1, type: 2}
-  currentLife: 0
-  currentMP: 0
-  currentDamage: 0
-  currentDefend: 0
+  detail: {fileID: 11400000, guid: c2edaa33aa8873b4c9c055a7ec8d7cd1, type: 2}
 --- !u!114 &1901058558124213869
 MonoBehaviour:
   m_ObjectHideFlags: 0

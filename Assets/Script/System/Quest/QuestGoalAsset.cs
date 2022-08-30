@@ -19,15 +19,11 @@ namespace QuestSystem
         public int RequireAmount => requireAmount;
         public int CurrentAmount => currentAmount;
 
-        public void Initialize(QuestTarget target) 
-        {
-            this.currentAmount = target.currentAmount;
-        }
+        public void Initialize() => this.currentAmount = 0;
 
-        public void Gathered() 
-        {
-            currentAmount++;
-        }
+        public void Initialize(QuestTarget target) => this.currentAmount = target.currentAmount;
+
+        public void Gathered() => currentAmount++;
     }
 
     public abstract class QuestGoalAsset : ScriptableObject
@@ -43,6 +39,8 @@ namespace QuestSystem
         public virtual QuestTarget this[string targetName] => this.targets.Where(target => target.TargetName == targetName).FirstOrDefault();
         
         public virtual Packed Pack => null;
+
+        public abstract void Initialize();
 
         public abstract void Initialize(Packed pack);
 
