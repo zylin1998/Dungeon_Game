@@ -1,30 +1,37 @@
 using System.Collections.Generic;
 using UnityEngine;
-using ComponentPool;
 
 namespace DialogueSystem
 {
-    public class DialogueManager : MonoBehaviour
+    public class DialogueManager : MonoBehaviour, IPageStateHandler
     {
         private Queue<Dialogue> conversation;
 
         private DialoguePanel panel;
-        
+
+        #region IPageStateHandler
+
+        public bool PageState { get; set; }
+
+        #endregion
+
         private void Awake()
         {
-            Components.Add(this, "Manager_Dialogue", EComponentGroup.Script);
+            CustomContainer.AddContent(this, "Dialogue");
         }
 
         private void Start()
         {
-            panel = Components.GetStaff<DialoguePanel>("Panel_Dialogue", EComponentGroup.Script, true);
+            GameManager.Instance.AddPage(this);
+
+            panel = CustomContainer.GetContent<DialoguePanel>("Dialogue");
         }
 
         public void StartDialogue(DialogueAsset asset)
         {
             conversation = asset.Conversation;
 
-            GameManager.Instance.dialogueMode = true;
+            this.PageState = true;
 
             panel.PanelState(true);
         }
@@ -45,6 +52,11 @@ namespace DialogueSystem
         public void EndDialogue()
         {
             panel.PanelState(false);
+        }
+
+        private void OnDestroy()
+        {
+            CustomContainer.RemoveContent(this, "Dialogue");
         }
     }
 }

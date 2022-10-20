@@ -1,0 +1,66 @@
+{
+    "itemPool": {
+        "items": [
+            {
+                "itemName": "Apple",
+                "count": 2
+            },
+            {
+                "itemName": "White Bottle",
+                "count": 2
+            },
+            {
+                "itemName": "Diamond",
+                "count": 0
+            }
+        ],
+        "cash": 40
+    },
+    "player": {
+        "physical": {
+            "life": 46.428565979003909,
+            "mp": 85.0,
+            "defend": 12.0
+        },
+        "weapon": {
+            "level": 0,
+            "maxLevel": 4,
+            "damage": 15.0,
+            "muiltiple": [
+                1.0,
+                1.2000000476837159,
+                1.5,
+                1.899999976158142,
+                2.5
+            ]
+        }
+    },
+    "quest": {
+        "quests": [
+            {
+                "quest": "RobberSlave1",
+                "questPack": {
+                    "questState": 2
+                }
+            }
+        ]
+    },
+    "teleportSpots": {
+        "saveSpot": {
+            "scene": "Village",
+            "spot": "SaveSpot"
+        },
+        "spots": [
+            {
+                "scene": "Village",
+                "spot": "VillageCenter"
+            }
+        ]
+    },
+    "shopList": {
+        "items": [
+            "Apple",
+            "White Bottle"
+        ]
+    }
+}

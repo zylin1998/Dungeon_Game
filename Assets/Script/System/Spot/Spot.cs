@@ -1,7 +1,7 @@
 using UnityEngine;
 using ComponentPool;
 
-public class Spot : MonoBehaviour, IDocumentHandler
+public class Spot : MonoBehaviour
 {
     [Header("基本地點資訊")]
     [SerializeField]
@@ -20,29 +20,26 @@ public class Spot : MonoBehaviour, IDocumentHandler
 
     protected virtual void Awake()
     {
-        Components.Add(this, spotName, EComponentGroup.Spots);
+        
+    }
+
+    protected virtual void Start()
+    {
+        SpotManager.Instance.AddSpot(this);
     }
 
     protected virtual void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Player"))
-        {
-            Documental();
-        }
+        //Enter Action
     }
     
     protected virtual void OnTriggerStay2D(Collider2D collision) 
     {
-        //Do Something
+        //Stay Action
     }
 
     protected virtual void OnTriggerExit2D(Collider2D collision) 
     {
         SpotManager.Instance.FirstEnter = true;
-    }
-
-    public virtual void Documental() 
-    {
-        SpotManager.Instance.SetSpot(this);
     }
 }

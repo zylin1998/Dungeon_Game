@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: White Bottle
   icon: {fileID: 21300204, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
-  category: 1
+  category: Consume
   detail: "\u4E00\u74F6\u5167\u542B\u767D\u8272\u98F2\u54C1\u7684\u74F6\u5B50\uFF0C\u4F7F\u7528\u5F8C\u80FD\u56DE\u5FA930MP"
   isDefaultItem: 0
   sellPrice: 30

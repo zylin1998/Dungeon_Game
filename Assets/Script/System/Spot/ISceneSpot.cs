@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
-public class ISceneSpot : InteractSpot, ICroseSceneHandler
+public class ISceneSpot : InteractSpot, ICroseSceneSpotHandler
 {
     [Header("目標場景地點")]
     [SerializeField]
@@ -21,20 +20,14 @@ public class ISceneSpot : InteractSpot, ICroseSceneHandler
         InteractCallBack = CrossScene;
     }
 
-    protected override void OnTriggerStay2D(Collider2D collision)
-    {
-        if (!SpotManager.Instance.FirstEnter) { return; }
-
-        base.OnTriggerStay2D(collision);
-    }
-
     public void CrossScene()
     {
         if (!SpotManager.Instance.FirstEnter) { return; }
 
-        GameManager.Instance.UserData.GoTo(targetScene, targetSpot);
+        var spots = GameManager.Instance.UserData.GetPackables<TeleportSpots>();
 
-        ComponentPool.Components.Reset();
-        SceneManager.LoadScene(targetScene, LoadSceneMode.Single);
+        spots.SetLocate(this);
+
+        TeleportManager.Instance.Teleport(spots.CrossSpot);
     }
 }

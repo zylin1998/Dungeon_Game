@@ -24,11 +24,16 @@ namespace QuestSystem
         public void Initialize(QuestTarget target) => this.currentAmount = target.currentAmount;
 
         public void Gathered() => currentAmount++;
+
+        public override string ToString() 
+        {
+            return string.Format("{0, -16}{1, 7}", targetName, $"({currentAmount}/{requireAmount})");
+        }
     }
 
-    public abstract class QuestGoalAsset : ScriptableObject
+    public abstract class QuestGoalAsset : PackableObject
     {
-        public abstract class Packed
+        public abstract class Pack : PackableObjectPack
         {
             public QuestTarget[] targets;
         }
@@ -37,15 +42,16 @@ namespace QuestSystem
         protected QuestTarget[] targets;
 
         public virtual QuestTarget this[string targetName] => this.targets.Where(target => target.TargetName == targetName).FirstOrDefault();
-        
-        public virtual Packed Pack => null;
 
-        public abstract void Initialize();
-
-        public abstract void Initialize(Packed pack);
+        public override IPackableHandler.BasicPack Packed => null;
 
         public abstract bool IsReached();
 
         public abstract void AmountGathered(string targetName);
+
+        public override string ToString()
+        {
+            return string.Concat(targets.ToList().ConvertAll(t => t.ToString()));
+        }
     }
 }

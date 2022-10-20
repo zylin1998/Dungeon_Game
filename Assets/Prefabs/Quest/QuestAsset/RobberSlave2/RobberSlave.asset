@@ -15,10 +15,11 @@ MonoBehaviour:
   giver: QuestBoard
   targetScene: Village
   quest:
-    title: "\u8D95\u8D70\u76DC\u8CCA"
-    description: "\u8D95\u8D70\u5F98\u5F8A\u5728\u6751\u838A\u65E5\u53E3\u7684\u76DC\u8CCA"
-    goldReward: 200
-    questState: 0
+    detail:
+      title: "\u8D95\u8D70\u76DC\u8CCA"
+      description: "\u8D95\u8D70\u5F98\u5F8A\u5728\u6751\u838A\u65E5\u53E3\u7684\u76DC\u8CCA"
+      goldReward: 150
+      questState: 0
     goal: {fileID: 11400000, guid: c40d75a2eb9cc9b4b98d34b431d1b2b0, type: 2}
     startDialogue: {fileID: 11400000, guid: b00193ff789541e4b87b9c8e56c0341a, type: 2}
     progressDialogue: {fileID: 11400000, guid: cd24fad54672cfa468858c2d9069552a, type: 2}

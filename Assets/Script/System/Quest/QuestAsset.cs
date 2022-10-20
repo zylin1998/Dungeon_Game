@@ -1,146 +1,77 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using DialogueSystem;
 using InventorySystem;
 
 namespace QuestSystem
 {
-    #region Quest State Enum
-
-    [System.Serializable]
-    public enum EQuestState 
-    {
-        Start = 0,
-        Progress = 1,
-        Finish = 2,
-    }
-
-    #endregion
-
-    [System.Serializable]
-    public class Quest
-    {
-        [Header("任務資訊")]
-        [SerializeField]
-        private string title;
-        [SerializeField]
-        private string description;
-        [SerializeField]
-        private int goldReward;
-        [Header("任務狀態")]
-        [SerializeField]
-        private EQuestState questState;
-        [SerializeField]
-        private QuestGoalAsset goal;
-        [Header("任務對話")]
-        [SerializeField]
-        private DialogueAsset startDialogue;
-        [SerializeField]
-        private DialogueAsset progressDialogue;
-        [SerializeField]
-        private DialogueAsset finishDialogue;
-
-        public string Title => title;
-        public string Description => description;
-        public int GoldReward => goldReward;
-
-        public EQuestState QuestState => questState;
-        
-        public QuestGoalAsset.Packed GoalPack => goal.Pack;
-
-        public delegate void QuestEndHandler();
-        public QuestEndHandler QuestEndCallBack { get; set; }
-
-        private QuestManager questManager => QuestManager.Instance;
-        private DialogueTrigger dialogueTrigger => DialogueTrigger.Instance;
-
-        public void Initialize() 
-        {
-            this.questState = EQuestState.Start;
-            this.goal.Initialize();
-        }
-
-        public void Initialize(QuestAsset.Packed pack) 
-        {
-            this.questState = pack.questState;
-            this.goal.Initialize(pack.goal);
-        }
-
-        public void Invoke() 
-        {
-            if (this.questState == EQuestState.Start) { this.Start(); }
-
-            if (this.questState == EQuestState.Progress) { this.Progress(); }
-
-            if (this.questState == EQuestState.Finish) { this.Finish(); }
-        }
-
-        private void Start() 
-        {
-            dialogueTrigger.TriggerDialogue(this.startDialogue);
-
-            questManager.QuestAcceptCallBack = this.OnQuestAccept;
-
-            dialogueTrigger.DialogueEndCallBack = delegate() { QuestManager.Instance.OpenQuestPanel(this); };
-        }
-
-        private void Progress() 
-        {
-            dialogueTrigger.TriggerDialogue(this.progressDialogue);
-        }
-
-        private void Finish() 
-        {
-            dialogueTrigger.TriggerDialogue(this.finishDialogue);
-
-            dialogueTrigger.DialogueEndCallBack = this.OnQuestEnd;
-        }
-
-        private void OnQuestAccept() 
-        {
-            this.questState = EQuestState.Progress;
-
-            questManager.EnemyKillCallBack += this.OnQuestGather;
-        }
-
-        private void OnQuestEnd() 
-        {
-            if(this.QuestEndCallBack != null) { this.QuestEndCallBack.Invoke(); }
-
-            Inventory.Instance.IncreaseGold(goldReward);
-        }
-
-        private void OnQuestGather(string targetName) 
-        {
-            this.goal.AmountGathered(targetName);
-
-            if (this.goal.IsReached()) 
-            {
-                this.questState = EQuestState.Finish;
-
-                questManager.EnemyKillCallBack -= this.OnQuestGather;
-            }
-        }
-    }
-
     [CreateAssetMenu(fileName = "Quest Asset", menuName = "Quest/Quest Asset", order = 1)]
-    public class QuestAsset : ScriptableObject
+    public class QuestAsset : PackableObject
     {
         #region Quest Packed
 
         [System.Serializable]
-        public class Packed
+        public class Pack : PackableObjectPack
         {
             public string quest;
-            public EQuestState questState;
-            public QuestGoalAsset.Packed goal;
+            public string questState;
+            public QuestGoalAsset.Pack goal;
 
-            public Packed() { }
+            public Pack() { }
 
-            public Packed(QuestAsset asset) 
+            public Pack(QuestAsset asset)
             {
-                quest = asset.name;
-                questState = asset.Quest.QuestState;
-                goal = asset.Quest.GoalPack;
+                this.quest = asset.name;
+                this.questState = asset.detail.questState;
+                this.goal = asset.goal.Packed as QuestGoalAsset.Pack;
+            }
+        }
+
+        #endregion
+
+        #region Giver
+
+        [Serializable]
+        public class QuestGiver
+        {
+            public string scene;
+            public string giver;
+        }
+
+        #endregion
+
+        #region Detail
+
+        [Serializable]
+        public class QuestDetail
+        {
+            public string title;
+            public string description;
+            public int goldReward;
+            public string questState;
+        }
+
+        #endregion
+
+        #region Dialogue
+
+        [Serializable]
+        public class QuestDialogue
+        {
+            public DialogueAsset start;
+            public DialogueAsset progress;
+            public DialogueAsset finish;
+
+            public DialogueAsset GetDialogue(string questState)
+            {
+                DialogueAsset dialogue = null;
+
+                if (questState == "Start") { dialogue = start; }
+                if (questState == "Progress") { dialogue = progress; }
+                if (questState == "Finish") { dialogue = finish; }
+
+                return dialogue;
             }
         }
 
@@ -148,24 +79,84 @@ namespace QuestSystem
 
         [Header("任務生成對象")]
         [SerializeField]
-        private string giver;
+        private QuestGiver giver;
+        [Header("任務資訊")]
         [SerializeField]
-        private string targetScene;
+        private QuestDetail detail;
         [SerializeField]
-        private Quest quest;
-
+        private QuestGoalAsset goal;
+        [Header("任務資訊")]
+        [SerializeField]
+        private QuestDialogue dialogue;
         [Header("新開放任務")]
         [SerializeField]
-        private QuestAsset[] newQuestAsset = null;
+        private List<QuestAsset> newQuestAsset = new List<QuestAsset>();
 
-        public string Giver => giver;
-        public string TargetScene => targetScene;
-        public Quest Quest => quest;
-        public Packed Pack => new Packed(this);
-        public QuestAsset[] NewQuestAsset => newQuestAsset;
+        public QuestGiver Giver => this.giver;
+        public QuestDetail Detail => this.detail;
+        public string Targets => goal.ToString();
 
-        public void Initialize() => quest.Initialize();
+        public List<QuestAsset> NewQuestAsset => newQuestAsset;
+        
+        public override IPackableHandler.BasicPack Packed => new Pack(this);
 
-        public void Initialize(Packed pack) => quest.Initialize(pack);
+        public Action QuestEndCallBack { get; set; }
+        
+        public override void Initialized()
+        {
+            this.detail.questState = "Start";
+            this.goal.Initialized();
+        }
+
+        public override void Initialized(IPackableHandler.BasicPack basicPack)
+        {
+            if (basicPack is Pack pack) 
+            { 
+                pack.UnPacked(this, packable => 
+                {
+                    this.detail.questState = pack.questState;
+                    this.goal.Initialized(pack.goal);
+                }); 
+            }
+        }
+
+        public void Invoke()
+        {
+            var trigger = DialogueTrigger.Instance;
+            var category = QuestManager.Instance.Category;
+            var dialogue = this.dialogue.GetDialogue(this.detail.questState);
+
+            if (category.Compare(this.detail.questState, "Start")) 
+            { 
+                trigger.TriggerDialogue(dialogue, () => { QuestManager.Instance.OpenQuestPanel(this); }); 
+            }
+
+            if (category.Compare(this.detail.questState, "Progress")) 
+            {
+                trigger.TriggerDialogue(dialogue, () => { }); 
+            }
+
+            if (category.Compare(this.detail.questState, "Finish")) 
+            {
+                trigger.TriggerDialogue(dialogue, Reward); 
+            }
+        }
+
+        private void Reward()
+        {
+            if (this.QuestEndCallBack != null) { this.QuestEndCallBack.Invoke(); }
+
+            Inventory.Instance.IncreaseGold(detail.goldReward);
+        }
+
+        public void OnQuestGather(string targetName)
+        {
+            this.goal.AmountGathered(targetName);
+
+            if (this.goal.IsReached())
+            {
+                QuestManager.Instance.FinishQuest(this);
+            }
+        }
     }
 }

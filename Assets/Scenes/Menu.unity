@@ -431,6 +431,7 @@ MonoBehaviour:
   start: {fileID: 39678381}
   resume: {fileID: 271139364}
   userData: {fileID: 11400000, guid: a595b80b0ca114e4c954078dfe41c171, type: 2}
+  teleportSpots: {fileID: 11400000, guid: 413d6fa21998a63429c2e69b29fbe26b, type: 2}
 --- !u!1 &269701290
 GameObject:
   m_ObjectHideFlags: 0
@@ -665,6 +666,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   userData: {fileID: 11400000, guid: a595b80b0ca114e4c954078dfe41c171, type: 2}
+  initialData: 0
+  userOption:
+    itemPool:
+      items: []
+      cash: 0
+    player:
+      physical:
+        life: 0
+        mp: 0
+        defend: 0
+      weapon:
+        level: 0
+        maxLevel: 0
+        damage: 0
+        muiltiple: []
+    quest:
+      quests: []
+    teleportSpots:
+      saveSpot:
+        scene: 
+        spot: 
+      spots: []
   componentGroups: []
 --- !u!4 &917514252
 Transform:

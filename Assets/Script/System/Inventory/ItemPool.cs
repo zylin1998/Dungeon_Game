@@ -6,7 +6,7 @@ using UnityEngine;
 namespace InventorySystem
 {
     [CreateAssetMenu(fileName = "Item Pool", menuName = "Inventory/Item Pool", order = 1)]
-    public class ItemPool : ScriptableObject
+    public class ItemPool : PackableObject
     {
         #region Item Stack Class
         
@@ -86,15 +86,15 @@ namespace InventorySystem
         #region Packed
 
         [System.Serializable]
-        public class Packed 
+        public class Pack : PackableObjectPack
         {
             public ItemData[] items;
 
             public int cash;
 
-            protected Packed() { }
+            protected Pack() { }
 
-            public Packed(ItemPool asset) 
+            public Pack(ItemPool asset) 
             {
                 this.cash = asset.cash;
 
@@ -105,17 +105,24 @@ namespace InventorySystem
         #endregion
 
         [SerializeField]
+        private ICategoryHandler.Category category;
+        [SerializeField]
         private int cash;
         [SerializeField]
-        private ItemStack[] items;
+        private List<ItemStack> items;
 
-        public Packed pack => new Packed(this);
+        public override IPackableHandler.BasicPack Packed => new Pack(this);
+
+        public ICategoryHandler.Category Category => this.category;
 
         #region Cash
 
         public int Cash => cash;
 
-        public void IncreaseCash(int cash) => this.cash += cash;
+        public void IncreaseCash(int cash)
+        {
+            this.cash += cash;
+        }
 
         public bool DecreaseCash(int cash)
         {
@@ -130,13 +137,9 @@ namespace InventorySystem
 
         #region Item
 
-        public ItemStack[] Items => items;
+        public List<ItemStack> Items => items;
 
-        public ItemStack[] Holds => items.Where(item => item.Count != 0).ToArray();
-
-        public ItemStack this[string itemName] => items.ToList().Find(match => match.ItemName == itemName);
-
-        public ItemStack this[int index] => items[index];
+        public List<ItemStack> Holds => items.Where(item => item.Count != 0).ToList();
 
         public bool IsEmpty => items.All(item => item.Count == 0);
 
@@ -144,18 +147,33 @@ namespace InventorySystem
 
         #endregion
 
-        public void Initialize() 
+        public override void Initialized() 
         {
             this.cash = 0;
 
-            this.items.ToList().ForEach(item => item.SetCount(0));
+            this.items.ForEach(item => item.SetCount(0));
         }
 
-        public void Initialize(Packed packed) 
+        public override void Initialized(IPackableHandler.BasicPack basicPack)
         {
-            this.cash = packed.cash;
+            if (basicPack is Pack pack)
+            {
+                pack.UnPacked(this, delegate (ItemPool packable)
+                {
+                    packable.cash = pack.cash;
+                    pack.items.ToList().ForEach(item => packable.GetItem(item.itemName).SetCount(item.count));
+                });
+            }
+        }
 
-            packed.items.ToList().ForEach(item => this[item.itemName].SetCount(item.count));
+        public ItemStack GetItem(string itemName)
+        {
+            return items.Find(match => match.ItemName.Equals(itemName));
+        }
+
+        public ItemStack GetItem(Item item)
+        {
+            return items.Find(match => match.Item.Equals(item));
         }
     }
 }

@@ -1,25 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using CustomInput;
+using UnityEngine.SceneManagement;
 
-public class SaveSpot : Spot
+public class SaveSpot : InteractSpot, IDocumentSpotHandler
 {
-    protected override void OnTriggerEnter2D(Collider2D collision)
-    {
-        base.OnTriggerEnter2D(collision);
+    public string SceneName => SceneManager.GetActiveScene().name;
 
-        SpotManager.Instance.FirstEnter = true;
+    protected override void Awake()
+    {
+        base.Awake();
+
+        InteractCallBack = Documental;
     }
 
-    protected override void OnTriggerStay2D(Collider2D collision) 
+    public void Documental() 
     {
-        if (collision.CompareTag("Player")) 
-        {
-            if (KeyManager.GetAxis("Vertical") != 0)
-            {
-                GameManager.Instance.SaveUserData();
-            }
-        }
+        TeleportManager.Instance.TeleportSpots.SaveLocate(this);
+
+        GameManager.Instance.SaveUserData();
     }
 }

@@ -3,10 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using ComponentPool;
 using CustomInput;
+using InventorySystem;
+using QuestSystem;
+using RoleSystem;
 
-public class GameManager : MonoBehaviour
+public interface IPageStateHandler 
+{
+    public bool PageState { get; }
+}
+
+public interface IPageStateDetected
+{
+    public List<IPageStateHandler> PageStates { get; }
+
+    public bool IsPageOpen { get; }
+}
+
+public class GameManager : MonoBehaviour, IPageStateDetected
 {
     #region Singleton
 
@@ -18,29 +32,33 @@ public class GameManager : MonoBehaviour
 
         Instance = this;
 
-        componentGroups = Components.Pool;
-
         Initialize();
+
+        PageStates = new List<IPageStateHandler>();
+
+        if (initialData) { userData.Initialized(); }
     }
 
     #endregion
 
-    [SerializeField]
     [Header("玩家資料（存檔）")]
-    private UserData userData;
-    [Header("物件池")]
     [SerializeField]
-    private List<Components.StaffGroup> componentGroups;
+    private UserData userData;
+    [SerializeField]
+    private bool initialData;
+    [SerializeField]
+    private UserOption userOption;
 
     public UserData UserData => userData;
 
-    public bool dialogueMode { get; set; }
-    public bool inventoryMode { get; set; }
-    public bool questMode { get; set; }
-    public bool shopMode { get; set; }
+    #region IPageStateDetected
 
-    public bool pause => dialogueMode || questMode || inventoryMode || shopMode;
-    
+    public List<IPageStateHandler> PageStates { get; private set; }
+
+    public bool IsPageOpen => PageStates.Exists(page => page.PageState);
+
+    #endregion
+
     #region Custom Input
 
 #if UNITY_STANDALONE_WIN
@@ -84,13 +102,71 @@ public class GameManager : MonoBehaviour
 
     #endregion
 
+    public void AddPage(IPageStateHandler page) 
+    {
+        this.PageStates.Add(page);
+    }
+
+    public void ChangeScene(string scene) 
+    {
+        SceneManager.LoadScene(scene, LoadSceneMode.Single);
+    }
+
     public void SaveUserData() 
     {
-        var scene = SceneManager.GetActiveScene().name;
-        var spot = Components.GetStaff<SpotManager>("SpotManager", EComponentGroup.Spots).CurrentSpot.SpotName;
+        var pack = this.userData.Packed as UserData.Pack;
 
-        userData.SetData(scene, spot);
+        userOption = new UserOption(pack);
 
-        SaveSystem.SaveJsonData(userData.Pack, Path.Combine(Application.dataPath, "SaveData"), "UserData.json");
+        var path = Path.Combine(Application.dataPath, "SaveData");
+        var fileName = "UserData.json";
+
+        userOption.Saved(path, fileName);
     }
+}
+
+[System.Serializable]
+public class UserOption : SaveData 
+{
+    public ItemPool.Pack itemPool;
+    public CharacterDetailAsset.Pack player;
+    public QuestListAsset.Pack quest;
+    public TeleportSpots.Pack teleportSpots;
+    public ShopList.Pack shopList;
+
+    protected UserOption() 
+    {
+
+    }
+
+    public UserOption(ISaveHandler.SavePack savePack)
+    {
+        if (savePack is UserData.Pack pack)
+        {
+            this.itemPool = pack.GetData<ItemPool.Pack>();
+            this.player = pack.GetData<CharacterDetailAsset.Pack>();
+            this.quest = pack.GetData<QuestListAsset.Pack>();
+            this.teleportSpots = pack.GetData<TeleportSpots.Pack>();
+            this.shopList = pack.GetData<ShopList.Pack>();
+        } 
+    }
+
+    public override ISaveHandler.SavePack GetPack()
+    {
+        var packs = new List<PackableObject.PackableObjectPack>();
+
+        packs.Add(this.itemPool);
+        packs.Add(this.player);
+        packs.Add(this.quest);
+        packs.Add(this.teleportSpots);
+        packs.Add(this.shopList);
+
+        return new UserData.Pack(packs);
+    }
+}
+
+[System.Serializable]
+public class SystemOption 
+{
+
 }

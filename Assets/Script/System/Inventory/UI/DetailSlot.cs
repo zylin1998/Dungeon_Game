@@ -5,28 +5,55 @@ using UnityEngine.EventSystems;
 
 namespace InventorySystem
 {
-    public class DetailSlot : InventorySlot, IPointerEnterHandler, ISelectHandler, IPointerExitHandler
+    public class DetailSlot : MonoBehaviour, IPointerEnterHandler, ISelectHandler, IPointerExitHandler, ISlotHandler<ItemPool.ItemStack>
     {
-        [Header("道具詳情文本")]
+        [SerializeField]
+        private Image icon;
         [SerializeField]
         protected Text itemName;
         [SerializeField]
         protected Text itemCount;
 
+        public Button Button => this.GetComponent<Button>();
+
+        public ItemPool.ItemStack Item { get; set; }
+
+        public bool Interact { get; set; }
+
         public Action OnSelectCallBack { get; set; }
         public Action OnExitCallBack { get; set; }
 
-        public override void AddItem(ItemPool.ItemStack item)
+        public void SetSlot(ItemPool.ItemStack item)
         {
-            base.AddItem(item);
+            Item = item;
+
+            icon.sprite = item.Item.Icon;
+            icon.preserveAspect = true;
+            icon.enabled = true;
 
             itemName.text = item.Item.ItemName;
             itemCount.text = $"{item.Count}";
         }
 
-        public virtual void UpdateCount() 
+        public void ClearSlot()
         {
-            itemCount.text = $"{item.Count}";
+            Item = null;
+
+            itemName.text = string.Empty;
+            itemCount.text = string.Empty;
+
+            icon.sprite = null;
+            icon.enabled = false;
+        }
+
+        public void UpdateSlot() 
+        {
+            itemCount.text = $"{Item.Count}";
+        }
+
+        public void CheckSlot() 
+        {
+            Interact = Item != null;
         }
 
         public void OnPointerEnter(PointerEventData eventData) 
@@ -34,7 +61,7 @@ namespace InventorySystem
             this.OnSelect(eventData);
         }
 
-        public virtual void OnSelect(BaseEventData eventData) 
+        public void OnSelect(BaseEventData eventData) 
         {
             if (OnSelectCallBack != null) { OnSelectCallBack.Invoke(); }
         }

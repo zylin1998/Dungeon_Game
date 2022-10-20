@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Apple
   icon: {fileID: 21300178, guid: 7810966f0f690954c87305933cabf2b0, type: 3}
-  category: 1
+  category: Consume
   detail: "\u4E00\u9846\u5149\u6FA4\u4EAE\u9E97\u7684\u8CA7\u679C\uFF0C\u4F7F\u7528\u5F8C\u80FD\u56DE\u5FA930HP"
   isDefaultItem: 0
   sellPrice: 30

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Diamond
   icon: {fileID: 21300000, guid: 6b3b8ef492edc304f9230dc368e8af5c, type: 3}
-  category: 2
+  category: Jewelry
   detail: "\u4E00\u9846\u4EAE\u9E97\u7684\u947D\u77F3\uFF0C\u4F3C\u4E4E\u80FD\u8CE3\u5230\u597D\u50F9\u9322"
   isDefaultItem: 0
   sellPrice: 500

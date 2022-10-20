@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using ComponentPool;
 
-public class SceneSpot : Spot, ICroseSceneHandler
+public class SceneSpot : Spot, ICroseSceneSpotHandler
 {
     [Header("目標場景地點")]
     [SerializeField]
@@ -15,8 +13,6 @@ public class SceneSpot : Spot, ICroseSceneHandler
 
     protected override void OnTriggerEnter2D(Collider2D collision)
     {
-        base.OnTriggerEnter2D(collision);
-
         if (collision.CompareTag("Player")) 
         {
             CrossScene();
@@ -27,9 +23,10 @@ public class SceneSpot : Spot, ICroseSceneHandler
     {
         if (!SpotManager.Instance.FirstEnter) { return; }
 
-        GameManager.Instance.UserData.GoTo(targetScene, targetSpot);
+        var spots = GameManager.Instance.UserData.GetPackables<TeleportSpots>();
 
-        Components.Reset();
-        SceneManager.LoadScene(targetScene, LoadSceneMode.Single);
+        spots.SetLocate(this);
+
+        TeleportManager.Instance.Teleport(spots.CrossSpot);
     }
 }

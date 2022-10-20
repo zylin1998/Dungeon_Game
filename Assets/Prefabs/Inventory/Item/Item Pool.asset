@@ -12,17 +12,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: beacf0dae1abdd2429f0aecdfa536842, type: 3}
   m_Name: Item Pool
   m_EditorClassIdentifier: 
-  cash: 0
+  category:
+    list:
+    - None
+    - Everything
+    - Consume
+    - Jewelry
+  cash: 150
   items:
   - perfab: {fileID: 154628090122885851, guid: 56a2e229d9925e342b7a0d18cf28f54b, type: 3}
     item: {fileID: 11400000, guid: e83dbd5b81ffd364c95fdb362cd94a03, type: 2}
     limit: 25
-    count: 0
+    count: 1
   - perfab: {fileID: 2412312616908767087, guid: 2dc13221386e0554fb7062326561bf84, type: 3}
     item: {fileID: 11400000, guid: 842316a1b32055042a8734ad86048595, type: 2}
     limit: 25
-    count: 0
+    count: 1
   - perfab: {fileID: 5189755440096847427, guid: c04473641e75a60429d7b8c884c5225f, type: 3}
     item: {fileID: 11400000, guid: a6f61e4aaed023642ae18e40442cebea, type: 2}
     limit: 50
-    count: 0
+    count: 1

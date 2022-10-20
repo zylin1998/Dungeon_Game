@@ -23,7 +23,7 @@ namespace InventorySystem
         [SerializeField]
         protected Sprite icon = null;
         [SerializeField]
-        protected ECategory category = ECategory.Everything;
+        protected string category;
         [SerializeField]
         protected string detail = "Detail";
 
@@ -33,7 +33,7 @@ namespace InventorySystem
         public string ItemName => itemName;
         public string Detail => detail;
         public Sprite Icon => icon;
-        public ECategory Category => category;
+        public string Category => category;
 
         public bool IsDefaultItem => isDefaultItem;
 

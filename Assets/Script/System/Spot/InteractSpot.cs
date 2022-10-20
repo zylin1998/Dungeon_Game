@@ -8,11 +8,6 @@ public class InteractSpot : Spot
 {
     protected Action InteractCallBack;
 
-    protected override void OnTriggerEnter2D(Collider2D collision)
-    {
-        
-    }
-
     protected override void OnTriggerStay2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))

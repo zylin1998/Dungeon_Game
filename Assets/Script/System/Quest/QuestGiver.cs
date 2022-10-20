@@ -1,7 +1,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
-using ComponentPool;
+using RoleSystem;
 
 namespace QuestSystem
 {
@@ -11,62 +11,37 @@ namespace QuestSystem
         [SerializeField]
         private string giver; 
         [SerializeField]
-        private Quest quest;
-        [SerializeField]
-        private List<Quest> standByQuests;
-        [Header("NPC")]
-        [SerializeField]
-        private NPCTrigger trigger; 
-
-        private QuestManager questManager => QuestManager.Instance;
+        private QuestAsset quest;
+        
+        private IInteractHandler trigger; 
 
         private void Awake()
         {
-            trigger = this.GetComponent<NPCTrigger>();
+            trigger = this.GetComponent<IInteractHandler>();
         }
 
         private void Start()
         {
-            Initialize();
-        }
-
-        private void Initialize() 
-        {
-            standByQuests = questManager.GetQuests(giver);
-
             SetQuest();
         }
 
-        private void SetQuest() 
+        private void SetQuest()
         {
-            if (standByQuests.Count <= 0) { return; }
+            quest = QuestManager.Instance.GetQuest(giver);
 
-            var progressQuests = standByQuests.Where(quest => quest.QuestState == EQuestState.Progress).ToArray();
-
-            quest = progressQuests.Length >= 1 ? progressQuests.First() : standByQuests.First();
-
-            quest.QuestEndCallBack = delegate() 
+            if (quest != null)
             {
-                if(quest != null) 
+                quest.QuestEndCallBack = delegate ()
                 {
-                    var quest = this.quest;
+                    trigger.InteractReset();
 
-                    RemoveQuest(quest);
-                    trigger.TriggerCallBackReset();
-                    questManager.FininshQuest(quest);
-                }
-            };
+                    QuestManager.Instance.RemoveQuest(this.quest);
 
-            if (trigger != null) { trigger.OnTriggeredCallBack = new NPCTrigger.TriggeredHandler(quest.Invoke); }
-        }
+                    SetQuest();
+                };
 
-        private void RemoveQuest(Quest quest) 
-        {
-            this.quest = null;
-
-            standByQuests.Remove(quest);
-            
-            SetQuest();
+                if (trigger != null) { trigger.InteractCallBack = quest.Invoke; }
+            }
         }
     }
 

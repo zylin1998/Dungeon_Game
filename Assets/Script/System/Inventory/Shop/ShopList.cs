@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,44 +7,41 @@ using UnityEngine;
 namespace InventorySystem 
 {
     [CreateAssetMenu(fileName = "Shop List", menuName = "Inventory/Shop List", order = 1)]
-    public class ShopList : ScriptableObject
+    public class ShopList : PackableObject
     {
         [System.Serializable]
-        public class Packed
+        public class Pack : PackableObjectPack
         {
             public string[] items;
 
-            protected Packed() { }
+            protected Pack() { }
 
-            public Packed(ShopList asset)
+            public Pack(ShopList asset)
             {
-                var list = new List<string>();
-
-                asset.Items.ForEach(item => list.Add(item.ItemName));
+                this.items = asset.Items.ConvertAll(item => item.ItemName).ToArray();
             }
         }
 
         [SerializeField]
         private ItemPool itemPool;
         [SerializeField]
-        private ShopList defaultList;
-        [SerializeField]
         private List<Item> items;
 
         public List<Item> Items => items;
 
-        public void Initialize() 
+        public override IPackableHandler.BasicPack Packed => new Pack(this);
+
+        public override void Initialized() 
         {
-            this.items = defaultList.items;
+            this.items = Resources.Load<ShopList>(Path.Combine("Inventory", "Default List")).Items;
         }
 
-        public void Initialize(Packed pack) 
+        public override void Initialized(IPackableHandler.BasicPack basicPack) 
         {
-            var list = new List<Item>();
-
-            pack.items.ToList().ForEach(item => list.Add(itemPool[item].Item));
-
-            items = list;
+            if (basicPack is Pack pack) 
+            {
+                items = pack.items.ToList().ConvertAll(item => itemPool.GetItem(item).Item);
+            }
         }
 
         public void AddItem(Item item) 

@@ -9,7 +9,7 @@ namespace QuestSystem
         #region Kill Packed
 
         [System.Serializable]
-        public class KillPacked : Packed 
+        public class KillPacked : Pack
         {
             protected KillPacked() {}
 
@@ -21,14 +21,39 @@ namespace QuestSystem
 
         #endregion
 
-        public override Packed Pack => new KillPacked(this);
+        public override IPackableHandler.BasicPack Packed => new KillPacked(this);
 
-        public override void Initialize() => targets.ToList().ForEach(target => target.Initialize());
+        public override void Initialized()
+        {
+            targets
+                .ToList()
+                .ForEach(target => target
+                .Initialize());
+        }
 
-        public override void Initialize(Packed pack) => (pack as KillPacked)?.targets.ToList().ForEach(target => this[target.TargetName].Initialize(target));
+        public override void Initialized(IPackableHandler.BasicPack basicPack)
+        {
+            if (basicPack is KillPacked pack)
+            {
+                pack.targets
+                    .ToList()
+                    .ForEach(target => this[target.TargetName]
+                    .Initialize(target)); 
+            }
+        }
 
-        public override bool IsReached() => targets.Length == targets.Where(target => target.RequireAmount == target.CurrentAmount).ToArray().Length;
+        public override bool IsReached()
+        {
+            return targets.Length == targets
+                .Where(target => target.RequireAmount == target.CurrentAmount)
+                .Count();
+        }
 
-        public override void AmountGathered(string targetName) => this[targetName]?.Gathered();
+        public override void AmountGathered(string targetName)
+        {
+            var target = this[targetName];
+
+            if (target != null) { target.Gathered(); }
+        }
     }
 }

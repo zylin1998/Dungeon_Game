@@ -1,290 +1,106 @@
-using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using CustomInput;
 
 namespace InventorySystem
 {
-    public class ItemShopUI : MonoBehaviour, ICategoryHandler
+    #region Shop Type Enum
+
+    [System.Serializable]
+    public enum EShopType
     {
-        #region Shop Type Enum
+        None = 0,
+        Perchase = 1,
+        Sell = 2
+    }
 
-        [System.Serializable]
-        public enum EShopType 
-        {
-            None = 0,
-            Perchase = 1,
-            Sell = 2
-        }
+    #endregion
 
-        #endregion
-
-        [SerializeField]
-        private ShopList shopList;
-        [SerializeField]
-        private EShopType shopType;
-        [SerializeField]
-        private ScrollRect scrollRect;
-        [SerializeField]
-        private Transform itemShopUI;
-        [SerializeField]
-        private Transform perchaseParent;
-        [SerializeField]
-        private Transform sellParent;
-        [SerializeField]
-        private Text shopTitle;
-        [SerializeField]
-        private Text itemDetail;
-        [SerializeField]
-        private Text itemSell;
-        [SerializeField]
-        private Text itemPerchase;
-        [SerializeField]
-        private Text itemCash;
-        [SerializeField]
-        private GameObject slotPrefab;
-        [SerializeField]
-        private CategorySelection[] selections;
-        [SerializeField]
-        private List<ShopSlot> shopSlots;
-        [SerializeField]
-        private List<ShopSlot> itemSlots;
-
-        private Inventory inventory => Inventory.Instance;
-
-        public EShopType ShopType { get => shopType; set => shopType = value; }
-
-        private void Awake()
-        {
-            CategoryInitialize();
-
-            shopList.Initialize();
-            
-            InitializeList();
-        }
+    public class ItemShopUI : MonoBehaviour, ISlotFieldCtrlHandler<ShopSlot, ItemPool.ItemStack>
+    {
+        public IDetailPanelHandler<ItemPool.ItemStack> DetailPanel { get; set; }
 
         private void Start()
         {
-            inventory.OnItemChangedCallBack += delegate(bool refresh) { UpdateUI(refresh); };
+            SlotField = CustomContainer.GetContent<ShopSlotField>("Shop");
+            DetailPanel = CustomContainer.GetContent<ShopDetailPanel>("Shop");
 
-            if (inventory.ItemPool.ItemCount == 0) { return; }
+            SlotField.Initialized();
+            SlotField.Slots.ForEach(slot => SetSlot(slot));
+;
+            Inventory.Instance.OnItemChangedCallBack += UpdateUI;
 
-            UpdateUI(true);
+            UpdateUI(!Inventory.Instance.ItemPool.IsEmpty);
         }
 
-        private void Update()
+        protected void Update()
         {
-            if (itemShopUI.gameObject.activeSelf && KeyManager.GetKeyDown("Jump")) 
+            if ((SlotField as ShopSlotField).gameObject.activeSelf && KeyManager.GetKeyDown("Attack"))
             {
-                ShopWindowState(false, EShopType.None); 
+                ShopWindowState(false, EShopType.None);
             }
         }
 
-        public void ShopWindowState(bool state, EShopType shopType) 
+        public void ShopWindowState(bool state, EShopType shopType)
         {
-            this.shopType = shopType;
-            itemShopUI.gameObject.SetActive(state);
+            SlotField.UIState(state);
 
-            GameManager.Instance.shopMode = state;
+            if (state) { (SlotField as ICategoryHandler).SelectFirst(); }
 
-            if (shopType != EShopType.None) { SetContent(); }
+            if (shopType != EShopType.None) { UpdateUI(state); }
         }
 
-        private void SetContent() 
+        #region ISlotFieldCtrlHandler
+
+        public ISlotFieldHandler<ShopSlot> SlotField { get; private set; }
+        
+        public ISlotFieldCtrlHandler<ShopSlot, ItemPool.ItemStack> Controller => this;
+        
+        public void UpdateUI(bool refresh)
         {
-            if (this.shopType == EShopType.Perchase) 
+            var shopType = ShopManager.Instance.ShopType;
+
+            if (refresh && shopType != EShopType.None) 
             {
-                scrollRect.content = perchaseParent as RectTransform;
-                perchaseParent.gameObject.SetActive(true);
-                sellParent.gameObject.SetActive(false);
-                shopTitle.text = "Perchase";
+                var list = new List<ItemPool.ItemStack>();
+
+                var itemPool = Inventory.Instance.ItemPool;
+                var shopList = ShopManager.Instance.ShopList;
+
+                if (shopType == EShopType.Sell) { list = itemPool.Holds; }
+
+                if (shopType == EShopType.Perchase) { list = shopList.Items.ConvertAll(item => itemPool.GetItem(item)); }
+
+                Controller.RefreshList(list);
             }
-
-            if (this.shopType == EShopType.Sell)
-            {
-                scrollRect.content = sellParent as RectTransform;
-                sellParent.gameObject.SetActive(true);
-                perchaseParent.gameObject.SetActive(false);
-                shopTitle.text = "Sell";
-            }
-        }
-
-        #region ICategoryHandler
-
-        public void CategoryInitialize() 
-        {
-            foreach (CategorySelection selection in selections) { selection.categoryHandler = this; }
-        }
-
-        public void SelectCategory(ECategory category)
-        {
-            foreach (CategorySelection selection in selections)
-            {
-                if (selection.Category != category) { selection.DeSelect(); }
-            }
-
-            foreach (DetailSlot slot in shopSlots)
-            {
-                slot.gameObject.SetActive(slot.Item.Category == category || category == ECategory.Everything);
-            }
-        }
-
-        #endregion
-
-        private void InitializeList() 
-        {
-            shopList.Items.ForEach(item => 
-            {
-                var addItem = CreateSlot(perchaseParent);
-
-                addItem.SetShopType(EShopType.Perchase);
-
-                addItem.AddItem(inventory.ItemPool[item.ItemName]);
-
-                shopSlots.Add(addItem);
-            });
-
-            inventory.ItemPool.Holds.ToList().ForEach(item =>
-            {
-                var addItem = CreateSlot(sellParent);
-
-                addItem.SetShopType(EShopType.Sell);
-
-                addItem.AddItem(item);
-
-                itemSlots.Add(addItem);
-            });
-        }
-
-        private void Trade(Item item) 
-        {
-            if (shopType == EShopType.Perchase && item is IItemPerchaseHandler perchase) { perchase.Perchase(1); }
-
-            if (shopType == EShopType.Sell && item is IItemSellHandler sell) { sell.SoldOut(1); }
-        }
-
-        public void Display(DetailSlot slot)
-        {
-            itemDetail.text = slot.Item.Detail;
-
-            itemSell.text = slot.Item is IItemSellHandler sell ? $"{sell.SellPrice}" : "無法出售";
-            itemPerchase.text = slot.Item is IItemPerchaseHandler perchase ? $"{perchase.PerchasePrice}" : "無法購買";
-        }
-
-        #region Check Item List
-
-        private void UpdateUI(bool refresh)
-        {
-            if (refresh) { RefreshList(); }
-
-            UpdateList();
-#if UNITY_STANDALONE_WIN
-            if (refresh) { SetNavigation(); }
-#endif
-        }
-
-        private void UpdateList()
-        {
-            itemCash.text = $"{inventory.ItemPool.Cash}";
-
-            shopSlots.ForEach(shopSlot => shopSlot.UpdateCount());
-
-            itemSlots.ForEach(shopSlot => shopSlot.UpdateCount());
-        }
-
-        private void RefreshList()
-        {
-            var itemCount = inventory.ItemPool.ItemCount;
-
-            if (sellParent.childCount < itemCount)
-            {
-                var need = itemCount - sellParent.childCount;
-
-                for (int i = 0; i < need; i++) { itemSlots.Add(CreateSlot(sellParent)); }
-            }
-
-            for (int i = 0; i < itemCount; i++)
-            {
-                var slot = itemSlots[i];
-                var item = inventory.ItemPool.Holds[i];
-
-                if (!slot.Stack.Equals(item)) { slot.AddItem(item); }
-            }
-
-            if (sellParent.childCount > itemCount) { DestroyRemain(); }
 
             UpdateList();
         }
 
-        private ShopSlot CreateSlot(Transform parent)
+        public void UpdateList()
         {
-            var slotObject = Instantiate(slotPrefab, parent);
-            var shopSlot = slotObject.GetComponent<ShopSlot>();
+            (SlotField as ShopSlotField).SetCash(Inventory.Instance.ItemPool.Cash);
 
-            shopSlot.Button.onClick.AddListener(delegate() { Trade(shopSlot.Item); });
-            shopSlot.OnSelectCallBack = delegate() { Display(shopSlot); };
-            shopSlot.OnExitCallBack = delegate() 
-            { 
-                itemDetail.text = string.Empty;
-                itemSell.text = string.Empty;
-                itemPerchase.text = string.Empty;
-            };
+            SlotField.Slots.ForEach(slot =>
+            {
+                slot.CheckSlot();
 
-            return shopSlot;
+                slot.SetShopType(ShopManager.Instance.ShopType);
+
+                slot.gameObject.SetActive(slot.Interact);
+
+                if (slot.Interact) { slot.UpdateSlot(); }
+            });
         }
 
-        private void DestroyRemain()
+        public void SetSlot(ShopSlot shopSlot)
         {
-            var itemCount = inventory.ItemPool.ItemCount;
-
-            for (int i = itemCount; i < sellParent.childCount; i++)
-            {
-                itemSlots.RemoveAt(i);
-                Destroy(sellParent.GetChild(i).gameObject);
-            }
+            shopSlot.Button.onClick.AddListener(() => ShopManager.Instance.Trade(shopSlot.Item.Item));
+            shopSlot.OnSelectCallBack = () => { DetailPanel.SetDetail(shopSlot.Item); };
+            shopSlot.OnExitCallBack = DetailPanel.Clear;
         }
 
         #endregion
-#if UNITY_STANDALONE_WIN
-        #region Navigation Reset
-
-        private void SetNavigation()
-        {
-            var length = shopSlots.Count - 1;
-
-            for (int i = 0; i <= length; i++)
-            {
-                var detailSlot = shopSlots[i];
-                var navigation = new Navigation();
-
-                navigation.mode = Navigation.Mode.Explicit;
-
-                if (i == 0)
-                {
-                    navigation.selectOnUp = shopSlots[length].Button;
-                    navigation.selectOnDown = length != 0 ? shopSlots[i + 1].Button : shopSlots[0].Button;
-                }
-
-                if (i >= 1 && i <= length - 1)
-                {
-                    navigation.selectOnUp = shopSlots[i - 1].Button;
-                    navigation.selectOnDown = shopSlots[i + 1].Button;
-                }
-
-                if (i == length && i != 0)
-                {
-                    navigation.selectOnUp = shopSlots[i - 1].Button;
-                    navigation.selectOnDown = shopSlots[0].Button;
-                }
-
-                detailSlot.Button.navigation = navigation;
-            }
-        }
-
-        #endregion
-#endif
     }
 }

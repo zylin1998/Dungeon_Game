@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c68d5ddea660bb4684f581a681b645c, type: 3}
+  m_Name: RobberSlave2
+  m_EditorClassIdentifier: 
+  giver:
+    scene: Village
+    giver: QuestBoard
+  detail:
+    title: "\u9A45\u8D95\u76DC\u8CCA"
+    description: "\u53C8\u6709\u76DC\u8CCA\u5F98\u5F8A\u5728\u6751\u5B50\u5165\u53E3\uFF0C\u8ACB\u5C07\u4ED6\u5011\u9A45\u9010"
+    goldReward: 150
+    questState: Start
+  goal: {fileID: 11400000, guid: 811b45fa6fc016040bb213f475a35231, type: 2}
+  dialogue:
+    start: {fileID: 11400000, guid: 1d29f501fb220b94c8f2bd49c8ae94bc, type: 2}
+    progress: {fileID: 11400000, guid: d7d7dad7ba7fd6e48b47626404c08d44, type: 2}
+    finish: {fileID: 11400000, guid: 5b5011940d7e2fc469d7fe42bb9a27cc, type: 2}
+  newQuestAsset: []

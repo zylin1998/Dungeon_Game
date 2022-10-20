@@ -24,68 +24,101 @@ namespace QuestSystem
 
         #endregion
 
-        [SerializeField]
-        private QuestListAsset list;
-        [SerializeField]
-        private QuestPanel questPanel;
-        [SerializeField]
-        private List<Quest> acceptQuest = new List<Quest>();
+        public QuestListAsset QuestList { get; private set; }
+        
+        private string SceneName { get; set; }
+        
+        public IConfirmUICtrlHandler<QuestAsset> AcceptUI { get; private set; }
 
-        private QuestListAsset defaultList;
-        [SerializeField]
-        private List<QuestAsset> quests;
+        public event Action<string> EnemyKillCallBack 
+        {
+            add => QuestList.EnemyKillCallBack += value;
 
-        private string sceneName;
+            remove => QuestList.EnemyKillCallBack -= value;
+        }
 
-        public Action QuestAcceptCallBack { get; set; }
+        public event Action<string> ItemPickUpCallBack
+        {
+            add => QuestList.ItemPickUpCallBack += value;
 
-        public Action<string> EnemyKillCallBack { get; set; }
-        public Action<string> ItemPickUpCallBack { get; set; }
+            remove => QuestList.ItemPickUpCallBack -= value;
+        }
+
+        public Action<bool> QuestUpdateCallBack { get; set; }
+
+        public ICategoryHandler.Category Category => QuestList.Category;
+
+        private void Start()
+        {
+            AcceptUI = CustomContainer.GetContent<QuestAcceptUI>("QuestAccept");
+        }
 
         private void Initialize() 
         {
-            sceneName = SceneManager.GetActiveScene().name;
+            SceneName = SceneManager.GetActiveScene().name;
 
-            list = Resources.Load<QuestListAsset>(Path.Combine("Quest", "Quest_List"));
-            defaultList = Resources.Load<QuestListAsset>(Path.Combine("Quest", "Quest_List_Default"));
-
-            if (list.Count <= 0) { list.Initialize(defaultList.Copy); }
-
-            quests = new List<QuestAsset>(list[sceneName]);
+            QuestList = GameManager.Instance.UserData.GetPackables<QuestListAsset>();
         }
 
-        public List<Quest> GetQuests(string giver) 
+        public void OpenQuestPanel(QuestAsset quest) 
         {
-            var targetQuests = new List<Quest>();
-
-            foreach (var asset in quests) 
-            {
-                if (asset.Giver == giver)
-                {
-                    targetQuests.Add(asset.Quest);
-                }
-            }
-
-            return targetQuests;
+            AcceptUI.SendMessage(quest);
         }
 
-        public void OpenQuestPanel(Quest quest) 
+        public void AcceptQuest(QuestAsset quest) 
         {
-            questPanel.gameObject.SetActive(true);
-            questPanel.OpenQuestWindow(quest); 
+            quest.Detail.questState = "Progress";
+
+            this.EnemyKillCallBack += quest.OnQuestGather;
+            this.UpdateUI(false);
         }
 
-        public void AcceptQuest(Quest quest) { acceptQuest.Add(quest); }
+        public void FinishQuest(QuestAsset quest) 
+        {
+            quest.Detail.questState = "Finish";
 
-        public void FininshQuest(Quest quest) 
-        { 
-            acceptQuest.Remove(quest);
+            this.EnemyKillCallBack -= quest.OnQuestGather;
+            this.UpdateUI(false);
+        }
 
-            var asset = quests.Find(match => match.Quest.Equals(quest));
+        public void RemoveQuest(QuestAsset quest) 
+        {
+            QuestList.RemoveQuest(quest);
 
-            if (asset.NewQuestAsset.Length != 0) { asset.NewQuestAsset.ToList().ForEach(a => quests.Add(a)); }
+            this.UpdateUI(true);
+        }
 
-            quests.Remove(asset);
+        #region Get Quest
+
+        public QuestAsset GetQuest(string giver) 
+        {
+            return QuestList.GetQuest(SceneName, giver);
+        }
+
+        public List<QuestAsset> GetQuestList(string giver) 
+        {
+            return QuestList.GetQuests(SceneName, giver);
+        }
+
+        #endregion
+
+        #region Action Invoke
+
+        public void EnemyKilled(string enemy) 
+        {
+            if (QuestList.EnemyKillCallBack != null) { QuestList.EnemyKillCallBack.Invoke(enemy); }
+        }
+
+        public void ItemPickedUp(string item) 
+        {
+            if (QuestList.ItemPickUpCallBack != null) { QuestList.ItemPickUpCallBack.Invoke(item); }
+        }
+
+        #endregion
+
+        public void UpdateUI(bool refresh) 
+        {
+            if (QuestUpdateCallBack != null) { QuestUpdateCallBack.Invoke(refresh); }
         }
     }
 }

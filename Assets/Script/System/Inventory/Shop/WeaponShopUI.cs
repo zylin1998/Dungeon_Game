@@ -2,17 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using CustomInput;
 using RoleSystem;
 
 namespace InventorySystem
 {
-    public class WeaponShopUI : MonoBehaviour
+    public class WeaponShopUI : MonoBehaviour, IPageStateHandler, IUpdateUIHandler
     {
         [SerializeField]
         private CharacterDetailAsset detailAsset;
-        [SerializeField]
-        private Transform weaponShopUI;
         [SerializeField]
         private Text cost;
         [SerializeField]
@@ -21,73 +18,96 @@ namespace InventorySystem
         private Button cancel;
         [SerializeField]
         private int basicCost;
-        [SerializeField]
-        private WeaponDetail weapon;
+        
+        private WeaponDetail Weapon { get; set; }
 
-        private int paid;
+        private int Paid { get; set; }
 
-        private void OnTriggerStay2D(Collider2D collision)
-        {
-            if (collision.CompareTag("Player")) 
-            {
-                if (KeyManager.GetAxis("Vertical") != 0 && !weaponShopUI.gameObject.activeSelf) 
-                {
-                    weaponShopUI.gameObject.SetActive(true);
+        #region IPageStateHandler
 
-                    GameManager.Instance.shopMode = true;
+        public bool PageState { get; private set; }
 
-                    UpdateUI();
-                }
+        #endregion
 
-                if (KeyManager.GetKeyDown("Jump") && weaponShopUI.gameObject.activeSelf)
-                {
-                    weaponShopUI.gameObject.SetActive(false);
+        #region IUpdateUIHandler
 
-                    GameManager.Instance.shopMode = false;
-                }
-            }
-        }
+        public Button Cancel => cancel;
 
-        private void Start()
-        {
-            weapon = detailAsset.SingleWeapon;
-
-            if (upgrade) { upgrade.onClick.AddListener(Upgrade); }
-
-            if (cancel) { cancel.onClick.AddListener(Cancel); }
-        }
-
-        private void Upgrade() 
-        {
-            Inventory.Instance.DecreaseGold(paid);
-
-            weapon.Upgrade();
-
-            UpdateUI();
-        }
-
-        private void Cancel() 
-        {
-            weaponShopUI.gameObject.SetActive(false);
-
-            GameManager.Instance.shopMode = false;
-        }
-
-        private void UpdateUI()
+        public void UpdateUI()
         {
             upgrade.interactable = false;
 
-            if (weapon != null)
+            if (Weapon != null)
             {
-                paid = System.Convert.ToInt32(basicCost * weapon?.Rate);
-            
-                upgrade.interactable = Inventory.Instance.IsEnough(paid) && !weapon.IsMax;
+                this.Paid = System.Convert.ToInt32(basicCost * Weapon.Rate);
+
+                upgrade.interactable = Inventory.Instance.IsEnough(Paid) && !Weapon.IsMax;
             }
 
             if (cost)
             {
-                cost.text = weapon.IsMax ? "等級已滿" : string.Format("{0}G", paid);
+                cost.text = Weapon.IsMax ? "等級已滿" : string.Format("{0}G", Paid);
             }
+        }
+
+        public void UIState(bool state)
+        {
+            this.gameObject.SetActive(state);
+
+            this.PageState = state;
+
+            if (state) { UpdateUI(); }
+        }
+
+        #endregion
+
+        private void Awake()
+        {
+            CustomContainer.AddContent(this, "Shop");
+        }
+
+        private void Start()
+        {
+            Weapon = detailAsset.SingleWeapon;
+
+            if (upgrade) { upgrade.onClick.AddListener(UpgradeClick); }
+
+            if (cancel) { cancel.onClick.AddListener(CancelClick); }
+
+            GameManager.Instance.AddPage(this);
+
+            UIState(false);
+        }
+
+        private void Update()
+        {
+            if (this.PageState && CustomInput.KeyManager.GetKeyDown("Attack")) { this.UIState(false); }
+        }
+
+        #region Button Events
+
+        private void UpgradeClick() 
+        {
+            var paid = Inventory.Instance.DecreaseGold(this.Paid);
+
+            if (paid)
+            {
+                Weapon.Upgrade();
+
+                UpdateUI();
+            }
+        }
+
+        private void CancelClick() 
+        {
+            UIState(false);
+        }
+
+        #endregion
+
+        private void OnDestroy()
+        {
+            CustomContainer.RemoveContent(this, "Shop");
         }
     }
 }

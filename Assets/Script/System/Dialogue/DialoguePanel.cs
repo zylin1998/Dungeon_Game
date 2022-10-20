@@ -26,14 +26,14 @@ namespace DialogueSystem
 
         private void Awake()
         {
-            Components.Add(this, "Panel_Dialogue", EComponentGroup.Script);
+            CustomContainer.AddContent(this, "Dialogue");
 
             animator = this.GetComponent<Animator>();
         }
 
         private void Start()
         {
-            dialogueManager = Components.GetStaff<DialogueManager>("Manager_Dialogue", EComponentGroup.Script);
+            dialogueManager = CustomContainer.GetContent<DialogueManager>("Dialogue");
 
             SetButton();
         }
@@ -105,7 +105,7 @@ namespace DialogueSystem
 
             if (name == "Close") 
             { 
-                gameManager.dialogueMode = false;
+                dialogueManager.PageState = false;
 
                 if (dialogueTrigger.DialogueEndCallBack != null) 
                 { 
@@ -146,6 +146,11 @@ namespace DialogueSystem
 #if UNITY_ANDROID
             return MobileInput.GetButtonDown("Jump");
 #endif
+        }
+
+        private void OnDestroy()
+        {
+            CustomContainer.RemoveContent(this, "Dialogue");
         }
     }
 }

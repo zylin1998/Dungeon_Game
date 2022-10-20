@@ -25,7 +25,10 @@ namespace InventorySystem
             Inventory.Instance.Remove(this);
         }
 
-        public abstract void Perchase(int count);
+        public virtual void Perchase(int count) 
+        {
+            Debug.Log($"{itemName} {count} perchased.");
+        }
 
         public abstract void SoldOut(int count);
     }

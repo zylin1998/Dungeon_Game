@@ -28,14 +28,21 @@ namespace DialogueSystem
 
         private void Start()
         {
-            dialogueManager = Components.GetStaff<DialogueManager>("Manager_Dialogue", EComponentGroup.Script);
+            dialogueManager = CustomContainer.GetContent<DialogueManager>("Dialogue");
         }
 
         #endregion
 
-        public void TriggerDialogue(DialogueAsset asset)
+        public void TriggerDialogue(DialogueAsset dialogue)
         {
-            dialogueManager.StartDialogue(asset);
+            TriggerDialogue(dialogue, null);
+        }
+
+        public void TriggerDialogue(DialogueAsset dialogue, Action end) 
+        {
+            DialogueEndCallBack = end ?? delegate { };
+
+            dialogueManager.StartDialogue(dialogue);
         }
     }
 }

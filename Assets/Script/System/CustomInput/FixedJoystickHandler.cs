@@ -16,7 +16,7 @@ namespace CustomInput
         
         private void Awake()
         {
-            Components.Add(this, "Mobile_JoyStick", EComponentGroup.Script);
+            CustomContainer.AddContent(this, "Input");
         }
 
         private void Start()
@@ -42,6 +42,11 @@ namespace CustomInput
         public void OnEndDrag(PointerEventData eventData)
         {
             axes.isDrag = false;
+        }
+
+        private void OnDestroy()
+        {
+            CustomContainer.RemoveContent(this, "Input");
         }
     }
 }

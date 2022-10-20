@@ -1,63 +1,102 @@
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+
 namespace QuestSystem 
 {
     [CreateAssetMenu(fileName = "Quest List Asset", menuName = "Quest/Quest List Asset", order = 1)]
-    public class QuestListAsset : ScriptableObject
+    public class QuestListAsset : PackableObject
     {
-        #region Data Packed Class
-
-        [System.Serializable]
-        public class Packed
+        [Serializable]
+        public class Pack : PackableObjectPack
         {
-            public QuestAsset.Packed[] quests;
+            public QuestAsset.Pack[] quests;
 
-            public Packed() { }
+            public Pack() { }
 
-            public Packed(QuestListAsset asset) 
+            public Pack(QuestListAsset asset) 
             {
-                this.quests = asset.quests.ToList().ConvertAll(quest => quest.Pack).ToArray();
+                this.quests = asset.quests
+                    .ConvertAll(quest => quest.Packed as QuestAsset.Pack)
+                    .ToArray();
             }
         }
-
-        #endregion
 
         [SerializeField]
-        private QuestAsset[] quests;
+        private ICategoryHandler.Category category;
+        [SerializeField]
+        private List<QuestAsset> quests;
 
-        public int Count => this.quests.Length;
+        public int Count => this.quests.Count;
 
-        public QuestAsset[] Copy => new List<QuestAsset>(this.quests).ToArray();
+        public ICategoryHandler.Category Category => category;
 
-        public QuestAsset[] this[string targetScene] => this.quests.Where(quest => quest.TargetScene == targetScene).ToArray();
+        public override IPackableHandler.BasicPack Packed => new Pack(this);
 
-        public Packed Pack => new Packed(this);
+        public Action<string> EnemyKillCallBack { get; set; }
+        public Action<string> ItemPickUpCallBack { get; set; }
 
-        public void Initialize(QuestAsset[] quests) 
+        public override void Initialized()
         {
-            this.quests = quests;
+            quests = Resources.Load<QuestListAsset>(Path.Combine("Quest", "Quest_List_Default")).GetList();
 
-            this.quests.ToList().ForEach(quest => quest.Initialize());
+            quests.ForEach(quest => quest.Initialized());
         }
 
-        public void Initialize(Packed pack) 
+        public override void Initialized(IPackableHandler.BasicPack basicPack) 
         {
-            if (pack == null) { return; }
-
-            var quests = new List<QuestAsset>();
-
-            foreach (QuestAsset.Packed quest in pack.quests)
+            QuestAsset LoadAsset(QuestAsset.Pack pack) 
             {
-                var add = Resources.Load<QuestAsset>(Path.Combine("Quest", quest.quest));
+                var asset = Resources.Load<QuestAsset>(Path.Combine("Quest", pack.quest));
 
-                add.Initialize(quest);
+                if (pack != null) asset.Initialized(pack);
 
-                quests.Add(add);
+                else { asset.Initialized(); }
+
+                return asset;
             }
 
-            this.quests = quests.ToArray();
+            if (basicPack is Pack pack)
+            {
+                pack.UnPacked(this, packable => packable.quests = pack.quests.ToList().ConvertAll(LoadAsset));
+            }
+        }
+
+        private List<QuestAsset> GetList() 
+        {
+            return new List<QuestAsset>(this.quests);
+        }
+
+        public List<QuestAsset> GetQuests(string scene, string giver) 
+        {
+            return this.quests
+                .Where(s => s.Giver.scene == scene)
+                .Where(q => q.Giver.giver == giver)
+                .ToList();
+        }
+
+        public QuestAsset GetQuest(string scene, string giver) 
+        {
+            var quests = GetQuests(scene, giver);
+
+            if (!quests.Any()) { return null; }
+
+            var first = quests.FirstOrDefault();
+
+            var progress = quests.Find(q => q.Detail.questState == "Progress");
+
+            return progress == null ? first : progress;
+        }
+
+        public void RemoveQuest(QuestAsset quest) 
+        {
+            var asset = this.quests.Find(match => match.Equals(quest));
+
+            if (asset.NewQuestAsset.Any()) { asset.NewQuestAsset.ForEach(add => this.quests.Add(add)); }
+
+            quests.Remove(asset);
         }
     }
 }

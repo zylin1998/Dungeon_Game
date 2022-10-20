@@ -1,5 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using ComponentPool;
 
 public class SpotManager : MonoBehaviour
 {
@@ -20,27 +21,50 @@ public class SpotManager : MonoBehaviour
 
     [SerializeField]
     private string initialSpot;
+    [SerializeField]
+    private List<Spot> spots = new List<Spot>();
    
     public bool FirstEnter { get; set; }
 
-    public Spot CurrentSpot { get; private set; }
+    public bool IsReady { get; private set; }
+
+    public Spot InitialSpot => spots.Find(spot => spot.SpotName == initialSpot);
 
     private void Start()
     {
-        SpotInitialize();
+        Initialize();
     }
 
-    private void SpotInitialize() 
+    private void Initialize() 
     {
-        var spot = GameManager.Instance.UserData.Spot;
+        var spot = GameManager.Instance.UserData.GetPackables<TeleportSpots>().CrossSpot.spot;
 
         if (spot != string.Empty) { initialSpot = spot; }
 
-        CurrentSpot = Components.GetStaff<Spot>(initialSpot, EComponentGroup.Spots);
+        IEnumerator SpotCheck() 
+        {
+            bool waitForSpot = true;
+
+            while (waitForSpot) 
+            {
+                IsReady = spots.Exists(match => match.SpotName == initialSpot);
+
+                if (IsReady) { waitForSpot = false; }
+
+                yield return null;
+            }
+        }
+
+        StartCoroutine(SpotCheck());
     }
 
-    public void SetSpot(Spot spot) 
+    public void AddSpot(Spot spot) 
     {
-        CurrentSpot = spot;
+        if (!spots.Contains(spot)) { spots.Add(spot); }
+    }
+
+    public void RemoveSpot(Spot spot) 
+    {
+        spots.Remove(spot); 
     }
 }

@@ -4,6 +4,31 @@ using UnityEngine;
 
 public static class SaveSystem
 {
+	public enum ESaveType 
+	{
+		None,
+		Binary,
+		Json
+	}
+
+	public static void SaveData<T>(T data, string path, string fileName, ESaveType saveType) 
+	{
+		if (saveType == ESaveType.None) { return; }
+
+		if (saveType == ESaveType.Binary) { SaveBinaryData(data, path, fileName); }
+
+		if (saveType == ESaveType.Json) { SaveJsonData(data, path, fileName); }
+	}
+
+	public static T LoadData<T>(string fileName, ESaveType saveType) 
+	{
+		if (saveType == ESaveType.Binary) { return LoadBinaryData<T>(fileName); }
+
+		if (saveType == ESaveType.Json) { return LoadJsonData<T>(fileName); }
+
+		return default(T);
+	}
+
 	public static void SaveBinaryData<T> (T data, string path, string fileName)
 	{
 		BinaryFormatter formatter = new BinaryFormatter();
