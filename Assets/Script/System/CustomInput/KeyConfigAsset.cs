@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CustomInput
@@ -22,7 +23,7 @@ namespace CustomInput
         private KeyCode positive;
         [SerializeField]
         private KeyCode negative;
-
+        
         private float axes;
 
         public string AxesName => axesName;
@@ -76,6 +77,8 @@ namespace CustomInput
 
         public InputAxes this[string axesName] => axes.Where(a => a.AxesName == axesName).FirstOrDefault();
 
+        public List<string> AxesNames => axes.ToList().ConvertAll(a => a.AxesName);
+
         public InputList Copy => new InputList(this);
 
         public InputList() { }
@@ -91,43 +94,55 @@ namespace CustomInput
 
     #region Key Config Asset
 
-    [CreateAssetMenu(fileName = "Key Input Asset", menuName = "System/Key Input Asset",order = 1)]
-    public class KeyConfigAsset : ScriptableObject
+    [CreateAssetMenu(fileName = "Key Input Asset", menuName = "System/Key Input Asset", order = 1)]
+    public class KeyConfigAsset : PackableObject
     {
         #region Data Packed
 
-        public class Pack 
+        public class Pack : PackableObjectPack
         {
             public InputList[] inputList;
 
             protected Pack() { this.inputList = null; }
 
-            public Pack(KeyConfigAsset asset) { this.inputList = asset.inputLists; }
+            public Pack(KeyConfigAsset asset) { this.inputList = asset.inputLists.ToArray(); }
         }
 
         #endregion
 
         [SerializeField]
-        private InputList[] inputLists;
+        private List<InputList> inputLists;
 
-        public bool isEmpty => inputLists.Length <= 0;
+        public bool isEmpty => inputLists.Count <= 0;
 
-        public InputList this[InputList.EInputType inputType] => inputLists.Where(input => input.InputType == inputType).FirstOrDefault();
+        public List<InputList> InputLists => inputLists;
 
-        public Pack pack => new Pack(this);
+        public InputList this[InputList.EInputType inputType] => inputLists.Find(input => input.InputType == inputType);
 
-        public void Initialize(KeyConfigAsset asset) 
+        public override IPackableHandler.BasicPack Packed => new Pack(this);
+
+        public override void Initialized()
         {
-            var newList = new List<InputList>();
+            var list = Resources.Load<KeyConfigAsset>(Path.Combine("System", "CustomInput", "DefaultInput")).inputLists;
 
-            foreach (InputList list in asset.inputLists) { newList.Add(list.Copy); }
+            this.inputLists = list.Select(l => l.Copy).ToList();
 
-            inputLists = newList.ToArray();
+            KeyManager.Initialize(this);
         }
 
-        public void Initialize(Pack pack) 
+        public override void Initialized(IPackableHandler.BasicPack basicPack)
         {
-            inputLists = pack.inputList;
+            if (basicPack is Pack pack)
+            {
+                pack.UnPacked(this, packable => packable.inputLists = pack.inputList.ToList());
+            }
+
+            KeyManager.Initialize(this);
+        }
+
+        public List<InputAxes> GetAxes(string axes)
+        {
+            return inputLists.ConvertAll(list => list[axes]); 
         }
     }
 

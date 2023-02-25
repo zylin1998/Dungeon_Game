@@ -17,6 +17,8 @@ namespace RoleSystem
         }
 
         public void Flip(float flip);
+
+        public void LookAt(Transform transform);
     }
 
     public interface IInteractHandler 

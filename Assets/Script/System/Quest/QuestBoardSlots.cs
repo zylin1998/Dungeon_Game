@@ -7,36 +7,8 @@ using UnityEngine.UI;
 
 namespace QuestSystem
 {
-    public class QuestBoardSlots : MonoBehaviour, ICategoryHandler, ISlotFieldHandler<QuestSlot>, IPageStateHandler
+    public class QuestBoardSlots : MonoBehaviour, ISlotFieldHandler<QuestAsset>, ICategoryHandler, IPageStateHandler, INaviPanelCtrl
     {
-        #region ISlotFieldHandler
-
-        [SerializeField]
-        private Transform content;
-        [SerializeField]
-        private Button cancel;
-        [SerializeField]
-        ISlotFieldHandler<QuestSlot>.SlotDetail detail;
-
-        public Transform Content => content;
-        public Button Cancel => cancel;
-
-        public ISlotFieldHandler<QuestSlot>.SlotDetail Detail => detail;
-
-        public List<QuestSlot> Slots { get; set; }
-        public Action UICloseCallBack { get; set; }
-
-        public void UIState(bool state) 
-        {
-            if (!state && UICloseCallBack != null) { UICloseCallBack.Invoke(); }
-
-            this.PageState = state;
-
-            this.gameObject.SetActive(state);
-        }
-
-        #endregion
-
         protected void Awake()
         {
             CategoryInitialize();
@@ -46,8 +18,42 @@ namespace QuestSystem
 
         private void Start()
         {
+            this.GetNaviPanels();
+
             GameManager.Instance.AddPage(this);
+
+            UIState(false);
         }
+
+        #region ISlotFieldHandler
+
+        [SerializeField]
+        private Transform content;
+        [SerializeField]
+        private Button cancel;
+        [SerializeField]
+        ISlotFieldHandler<QuestAsset>.SlotDetail detail;
+
+        public Transform Content => content;
+        public Button Cancel => cancel;
+
+        public ISlotFieldHandler<QuestAsset>.SlotDetail Detail => detail;
+
+        public List<ISlotHandler<QuestAsset>> Slots { get; set; }
+        public Action UICloseCallBack { get; set; }
+
+        public void UIState(bool state) 
+        {
+            if (!state && UICloseCallBack != null) { UICloseCallBack.Invoke(); }
+
+            if (state) { this.PanelInitialize(); }
+
+            this.PageState = state;
+
+            this.gameObject.SetActive(state);
+        }
+
+        #endregion
 
         #region ICategoryHandler
 
@@ -62,7 +68,7 @@ namespace QuestSystem
         {
             if (selections.Any()) { selections.FirstOrDefault().Select(); }
 
-            if (Slots.Any()) { Slots.FirstOrDefault().GetComponent<Selectable>().Select(); }
+            if (Slots.Any()) { Slots.FirstOrDefault().Selectable.Select(); }
         }
 
         public void CategoryInitialize()
@@ -77,11 +83,11 @@ namespace QuestSystem
 
             Slots.ForEach(slot =>
             {
-                slot.CheckSlot();
+                var categories = new string[] { slot.Content?.Detail.questState, "Everything" };
 
-                var interact = slot.Interact && (this.category.Compare(slot.Item.Detail.questState, category) || this.category.Compare(category, "Everything"));
+                var interact = slot.Interact && this.category.Compare(category, categories);
 
-                slot.gameObject.SetActive(interact);
+                slot.UIState(interact);
             });
         }
 
@@ -90,6 +96,79 @@ namespace QuestSystem
         #region IPageOpenHandler
 
         public bool PageState { get; private set; }
+
+        #endregion
+
+        #region INaviPanelCtrl
+
+        public List<INaviPanel> NaviPanels { get; private set; }
+
+        public INaviPanel CurrentPanel { get; private set; }
+
+        public INaviPanel Initial => this.NaviPanels.Find(n => n.Initial);
+
+        public void GetNaviPanels()
+        {
+            this.NaviPanels = CustomContainer.GetContents<SelectableCollect>("Questboard").ConvertAll(c => c as INaviPanel);
+        }
+
+        public void SelectPanel(Vector2 direct)
+        {
+            var panelDir = new Vector2(direct.x, 0);
+            var selDir = new Vector2(0, direct.y);
+
+            if (panelDir != Vector2.zero)
+            {
+                var panel = this.CurrentPanel.FindPanel(panelDir);
+
+                if (panel != null)
+                {
+                    this.CurrentPanel = panel;
+
+                    var select = (this.CurrentPanel as SelectableCollect)?.FinalSelect;
+
+                    this.INaviSelectableSelect(select);
+                }
+            }
+
+            if (selDir != Vector2.zero)
+            {
+                var select = (this.CurrentPanel as SelectableCollect)?.FinalSelect?.FindNavi(selDir);
+
+                this.INaviSelectableSelect(select);
+            }
+        }
+
+        public void PanelInitialize()
+        {
+            if (this.Initial is SelectableCollect initial) 
+            {
+                Debug.Log(initial.Selectables.First());
+
+                initial.Selectables.First().Select(); 
+            }
+
+            var normal = this.NaviPanels.ToList().Find(n => !n.Initial);
+
+            if (normal != null)
+            {
+                this.CurrentPanel = normal;
+
+                if (this.CurrentPanel is SelectableCollect collect)
+                {
+                    INaviSelectableSelect(collect.Selectables.Any() ? collect.Selectables.First() : null);
+                }
+            }
+        }
+
+        private void INaviSelectableSelect(INaviSelectable selectable)
+        {
+            if (selectable == null) { return; }
+
+            (selectable as UnityEngine.EventSystems.ISelectHandler).OnSelect(null);
+
+            selectable.Selectable.Select();
+        }
 
         #endregion
 

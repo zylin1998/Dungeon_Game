@@ -45,7 +45,7 @@ namespace InventorySystem
         {
             this.shopType = shopType;
 
-            shopUI.ShopWindowState(true, shopType);
+            shopUI.UIState(true);
         }
 
         public void SetCategory(ECategory category) 

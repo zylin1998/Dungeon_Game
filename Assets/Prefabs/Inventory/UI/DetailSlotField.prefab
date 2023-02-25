@@ -462,9 +462,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: Consume
-  UnSelectColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5882353}
-  OnSelectColor: {r: 1, g: 1, b: 1, a: 1}
-  selectable: {fileID: 0}
+  selectedColor:
+    deSelect: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5882353}
+    onSelect: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &3104713628853032290
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,8 +744,8 @@ MonoBehaviour:
   m_Navigation:
     m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 3104713630014062485}
-    m_SelectOnDown: {fileID: 3104713628837405125}
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
     m_SelectOnLeft: {fileID: 0}
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
@@ -783,9 +783,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: Everything
-  UnSelectColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5882353}
-  OnSelectColor: {r: 1, g: 1, b: 1, a: 1}
-  selectable: {fileID: 0}
+  selectedColor:
+    deSelect: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5882353}
+    onSelect: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &3104713629354564253
 GameObject:
   m_ObjectHideFlags: 0
@@ -797,6 +797,7 @@ GameObject:
   - component: {fileID: 3104713629354564252}
   - component: {fileID: 3104713629354564254}
   - component: {fileID: 3104713629354564255}
+  - component: {fileID: 319166430592593655}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -864,6 +865,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_HorizontalFit: 0
   m_VerticalFit: 2
+--- !u!114 &319166430592593655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3104713629354564253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb9c0329f3bf4d40b567697863436d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initial: 0
+  naviPanels:
+    up: {fileID: 0}
+    down: {fileID: 0}
+    left: {fileID: 3539808753450793960}
+    right: {fileID: 0}
+  groupName: 
+  direct: 2
+  wrapAround: 0
 --- !u!1 &3104713629409896777
 GameObject:
   m_ObjectHideFlags: 0
@@ -1172,9 +1194,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   category: Jewelry
-  UnSelectColor: {r: 0.7843138, g: 0.7843138, b: 0.7843138, a: 0.5882353}
-  OnSelectColor: {r: 1, g: 1, b: 1, a: 1}
-  selectable: {fileID: 0}
+  selectedColor:
+    deSelect: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5882353}
+    onSelect: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1 &3104713630052677176
 GameObject:
   m_ObjectHideFlags: 0
@@ -1267,6 +1289,7 @@ GameObject:
   - component: {fileID: 3104713630284985103}
   - component: {fileID: 3104713630284985100}
   - component: {fileID: 3104713630284985101}
+  - component: {fileID: 3539808753450793960}
   m_Layer: 5
   m_Name: Panel_Category
   m_TagString: Untagged
@@ -1359,6 +1382,27 @@ MonoBehaviour:
   m_Spacing: {x: 0, y: 5}
   m_Constraint: 0
   m_ConstraintCount: 2
+--- !u!114 &3539808753450793960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3104713630284985091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb9c0329f3bf4d40b567697863436d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initial: 1
+  naviPanels:
+    up: {fileID: 0}
+    down: {fileID: 0}
+    left: {fileID: 0}
+    right: {fileID: 319166430592593655}
+  groupName: 
+  direct: 2
+  wrapAround: 0
 --- !u!1 &3104713630453445258
 GameObject:
   m_ObjectHideFlags: 0

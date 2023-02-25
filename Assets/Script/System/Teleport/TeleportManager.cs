@@ -23,7 +23,7 @@ public class TeleportManager : MonoBehaviour
 
     public TeleportSpots TeleportSpots { get; private set; }
     
-    public ISlotFieldCtrlHandler<TeleportSlot, TeleportSpots.TSData> TeleportUI { get; private set; }
+    public ISlotFieldCtrlHandler<TeleportSpots.TSData> TeleportUI { get; private set; }
 
     public Action<bool> SpotOpenCallBack = delegate { };
 
@@ -34,7 +34,7 @@ public class TeleportManager : MonoBehaviour
 
     public void UIState(bool state) 
     {
-        TeleportUI.SlotField.UIState(state);
+        TeleportUI.UIState(state);
     }
 
     public bool SpotIsOn(ITeleportSpotHandler spot) 
@@ -59,6 +59,8 @@ public class TeleportManager : MonoBehaviour
         if (spot.scene == SceneManager.GetActiveScene().name) { return; }
 
         TeleportSpots.SetLocate(spot);
+
+        CustomInput.KeyManager.ClearClient();
 
         SceneManager.LoadScene(spot.scene, LoadSceneMode.Single);
     }

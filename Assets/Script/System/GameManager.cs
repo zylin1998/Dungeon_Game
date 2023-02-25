@@ -31,15 +31,15 @@ public class GameManager : MonoBehaviour, IPageStateDetected
         if (Instance != null) { return; }
 
         Instance = this;
-
+#if UNITY_ANDROID
         Initialize();
-
+#endif
         PageStates = new List<IPageStateHandler>();
 
         if (initialData) { userData.Initialized(); }
     }
 
-    #endregion
+#endregion
 
     [Header("玩家資料（存檔）")]
     [SerializeField]
@@ -51,36 +51,15 @@ public class GameManager : MonoBehaviour, IPageStateDetected
 
     public UserData UserData => userData;
 
-    #region IPageStateDetected
+#region IPageStateDetected
 
     public List<IPageStateHandler> PageStates { get; private set; }
 
     public bool IsPageOpen => PageStates.Exists(page => page.PageState);
 
-    #endregion
+#endregion
 
-    #region Custom Input
-
-#if UNITY_STANDALONE_WIN
-
-    private KeyConfigAsset defaultInput;
-    private KeyConfigAsset customInput;
-    private KeyConfigAsset.Pack inputPack;
-
-    private void Initialize()
-    {
-        defaultInput = Resources.Load<KeyConfigAsset>(Path.Combine("System", "CustomInput", "DefaultInput"));
-        customInput = Resources.Load<KeyConfigAsset>(Path.Combine("System", "CustomInput", "CustomInput"));
-        inputPack = SaveSystem.LoadBinaryData<KeyConfigAsset.Pack>(Path.Combine(Application.dataPath, "SaveData", "InputSeetting"));
-
-        if (inputPack != null) { customInput.Initialize(inputPack); }
-
-        if (customInput.isEmpty) { customInput.Initialize(defaultInput); }
-
-        KeyManager.Initialize(customInput);
-    }
-
-#endif
+#region Custom Input
 
 #if UNITY_ANDROID
 
@@ -100,7 +79,7 @@ public class GameManager : MonoBehaviour, IPageStateDetected
 
 #endif
 
-    #endregion
+#endregion
 
     public void AddPage(IPageStateHandler page) 
     {
@@ -133,6 +112,7 @@ public class UserOption : SaveData
     public QuestListAsset.Pack quest;
     public TeleportSpots.Pack teleportSpots;
     public ShopList.Pack shopList;
+    public KeyConfigAsset.Pack keyConfig;
 
     protected UserOption() 
     {
@@ -148,6 +128,7 @@ public class UserOption : SaveData
             this.quest = pack.GetData<QuestListAsset.Pack>();
             this.teleportSpots = pack.GetData<TeleportSpots.Pack>();
             this.shopList = pack.GetData<ShopList.Pack>();
+            this.keyConfig = pack.GetData<KeyConfigAsset.Pack>();
         } 
     }
 
@@ -160,6 +141,7 @@ public class UserOption : SaveData
         packs.Add(this.quest);
         packs.Add(this.teleportSpots);
         packs.Add(this.shopList);
+        packs.Add(this.keyConfig);
 
         return new UserData.Pack(packs);
     }

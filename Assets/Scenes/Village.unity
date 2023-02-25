@@ -230,6 +230,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c6a27c65f3a77e841ab7a4788fa9281f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axes:
+  - axesName: Vertical
+    getKeyType: 1
+  - axesName: Attack
+    getKeyType: 4
 --- !u!114 &42183713
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242,8 +247,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea1028e361be2164799b6dbc4156d4f4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  teleportUI: {fileID: 42183712}
-  teleportSpots: {fileID: 11400000, guid: 413d6fa21998a63429c2e69b29fbe26b, type: 2}
 --- !u!1001 &45099813
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1246,6 +1249,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Old_Man
       objectReference: {fileID: 0}
+    - target: {fileID: 5002599626621015872, guid: da36b09e0f6d0044c93e0f3a36297ccd, type: 3}
+      propertyPath: m_TagString
+      value: Interact
+      objectReference: {fileID: 0}
     - target: {fileID: 5002599626621015873, guid: da36b09e0f6d0044c93e0f3a36297ccd, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -1441,7 +1448,7 @@ GameObject:
   - component: {fileID: 561905303}
   m_Layer: 0
   m_Name: WeaponShop
-  m_TagString: Untagged
+  m_TagString: Interact
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1501,6 +1508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89c3ce52839e3304dbd72bb33c4d52a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instance: 0
 --- !u!1001 &566452066
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2041,6 +2049,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1597922439}
     m_Modifications:
+    - target: {fileID: 319166430592593655, guid: e82504ef8fe594d43bf086960defec1c, type: 3}
+      propertyPath: groupName
+      value: Inventory
+      objectReference: {fileID: 0}
     - target: {fileID: 1988975268420161954, guid: e82504ef8fe594d43bf086960defec1c, type: 3}
       propertyPath: detail.slotPrefab
       value: 
@@ -2212,6 +2224,14 @@ PrefabInstance:
     - target: {fileID: 3104713630453445269, guid: e82504ef8fe594d43bf086960defec1c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3539808753450793960, guid: e82504ef8fe594d43bf086960defec1c, type: 3}
+      propertyPath: direct
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3539808753450793960, guid: e82504ef8fe594d43bf086960defec1c, type: 3}
+      propertyPath: groupName
+      value: Inventory
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e82504ef8fe594d43bf086960defec1c, type: 3}
@@ -3422,7 +3442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   userData: {fileID: 11400000, guid: a595b80b0ca114e4c954078dfe41c171, type: 2}
-  initialData: 0
+  initialData: 1
   userOption:
     itemPool:
       items: []
@@ -8672,7 +8692,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9993b8bd0aa71d54ab9ad9dc5390a389, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  questList: {fileID: 11400000, guid: 0c04d9451a884714699dbbba52fe42df, type: 2}
 --- !u!114 &1383243228
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8685,6 +8704,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4f9b2102132b27418a346f856eb7685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axes:
+  - axesName: Vertical
+    getKeyType: 1
+  - axesName: Horizontal
+    getKeyType: 1
+  - axesName: Attack
+    getKeyType: 4
+  - axesName: Jump
+    getKeyType: 4
 --- !u!114 &1383243229
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8900,7 +8928,7 @@ GameObject:
   - component: {fileID: 1421538677}
   m_Layer: 0
   m_Name: QuestBoard
-  m_TagString: Untagged
+  m_TagString: Interact
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8959,6 +8987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1615b6a741f88204d90df5d5f99070d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instance: 0
 --- !u!1 &1425959051
 GameObject:
   m_ObjectHideFlags: 0
@@ -9267,6 +9296,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fead60c5d2665c34fa4f9da08132a982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axes:
+  - axesName: Vertical
+    getKeyType: 1
+  - axesName: Horizontal
+    getKeyType: 1
+  - axesName: Attack
+    getKeyType: 4
+  - axesName: Jump
+    getKeyType: 4
 --- !u!1001 &1566766361
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9336,6 +9374,30 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1597922439}
     m_Modifications:
+    - target: {fileID: 3104713628837405114, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: onSelectColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713628837405114, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: onSelectColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713628837405114, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.a
+      value: 0.5882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713628837405114, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.b
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713628837405114, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.g
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713628837405114, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.r
+      value: 0.78431374
+      objectReference: {fileID: 0}
     - target: {fileID: 3104713628837405115, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -9359,6 +9421,38 @@ PrefabInstance:
     - target: {fileID: 3104713628837405115, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: onSelectColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: onSelectColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: onSelectColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: onSelectColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.a
+      value: 0.5882353
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.b
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.g
+      value: 0.78431374
+      objectReference: {fileID: 0}
+    - target: {fileID: 3104713629195946674, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
+      propertyPath: unSelectColor.r
+      value: 0.78431374
       objectReference: {fileID: 0}
     - target: {fileID: 3104713629195946675, guid: df8f92c5c7065d349b543a12903e115f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -9673,6 +9767,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73ff7d57754e59d448e5a1a440b5ea98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  axes:
+  - axesName: Inventory
+    getKeyType: 4
+  - axesName: Vertical
+    getKeyType: 1
+  - axesName: Horizontal
+    getKeyType: 1
+  - axesName: Attack
+    getKeyType: 4
 --- !u!114 &1628776394
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10547,7 +10650,7 @@ GameObject:
   - component: {fileID: 2045455591}
   m_Layer: 0
   m_Name: ItemShop
-  m_TagString: Untagged
+  m_TagString: Interact
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10606,6 +10709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8240fca4de97a18499228c8f7d1fc8c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instance: 0
 --- !u!1 &2084934231
 GameObject:
   m_ObjectHideFlags: 0
@@ -11030,6 +11134,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1597922439}
     m_Modifications:
+    - target: {fileID: 714828150042393831, guid: 48e5eb6574b5519468a9e35eb6a48713, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 714828150042393831, guid: 48e5eb6574b5519468a9e35eb6a48713, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -10
+      objectReference: {fileID: 0}
+    - target: {fileID: 714828150042393831, guid: 48e5eb6574b5519468a9e35eb6a48713, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 714828150042393831, guid: 48e5eb6574b5519468a9e35eb6a48713, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4527854424458927148, guid: 48e5eb6574b5519468a9e35eb6a48713, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5

@@ -4,8 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using CustomInput;
 
-public interface ISlotFieldHandler<TSlot>
+/// <summary>
+/// Storing and controlling all target ISlots.
+/// </summary>
+/// <typeparam name="TContent"></typeparam>
+public interface ISlotFieldHandler<TContent>
 {
     [Serializable]
     public class SlotDetail
@@ -23,7 +28,7 @@ public interface ISlotFieldHandler<TSlot>
     public Transform Content { get; }
     public SlotDetail Detail { get; }
     public Button Cancel { get; }
-    public List<TSlot> Slots { get; set; }
+    public List<ISlotHandler<TContent>> Slots { get; set; }
     public Action UICloseCallBack { get; set; }
 
     public void Initialized()
@@ -31,18 +36,18 @@ public interface ISlotFieldHandler<TSlot>
         Slots = CreateList(Detail.defaultCount);
     }
 
-    public TSlot CreateSlot()
+    public ISlotHandler<TContent> CreateSlot()
     {
         var newObject = GameObject.Instantiate(Detail.slotPrefab, Content);
 
-        var slot = newObject.GetComponent<TSlot>();
+        var slot = newObject.GetComponent<ISlotHandler<TContent>>();
 
         return slot;
     }
 
-    public List<TSlot> CreateList(int count)
+    public List<ISlotHandler<TContent>> CreateList(int count)
     {
-        var slots = new List<TSlot>();
+        var slots = new List<ISlotHandler<TContent>>();
 
         for (int i = 0; i < count; i++)
         {
@@ -57,7 +62,7 @@ public interface ISlotFieldHandler<TSlot>
         ExpandList(count, null);
     }
 
-    public void ExpandList(int count, Action<TSlot> setting) 
+    public void ExpandList(int count, Action<ISlotHandler<TContent>> setting) 
     {
         var increase = this.Detail.increaseCount;
 
@@ -80,19 +85,23 @@ public interface ISlotFieldHandler<TSlot>
     }
 }
 
-public interface ISlotFieldCtrlHandler<TSlot, TItem> where TSlot : ISlotHandler<TItem>
+/// <summary>
+/// Controlling slot fields.
+/// </summary>
+/// <typeparam name="TContent"></typeparam>
+public interface ISlotFieldCtrlHandler<TContent>
 {
-    public ISlotFieldHandler<TSlot> SlotField { get; }
+    public ISlotFieldHandler<TContent> SlotField { get; }
 
-    public ISlotFieldCtrlHandler<TSlot, TItem> Controller { get; }
+    public ISlotFieldCtrlHandler<TContent> Controller { get; }
 
     public void UpdateUI(bool refresh);
 
     public void UpdateList();
 
-    public void SetSlot(TSlot slot);
+    public void SetSlot(ISlotHandler<TContent> slot);
 
-    public void RefreshList(List<TItem> items)
+    public void RefreshList(List<TContent> items)
     {
         var count = items.Count;
         var capacity = SlotField.Slots.Count;
@@ -118,35 +127,51 @@ public interface ISlotFieldCtrlHandler<TSlot, TItem> where TSlot : ISlotHandler<
             }
         }
     }
+
+    public void UIState(bool state);
 }
 
-public interface IDetailPanelHandler <TItem>
+/// <summary>
+/// Dispalying details of the content.
+/// </summary>
+/// <typeparam name="TContent"></typeparam>
+public interface IDetailPanelHandler <TContent>
 {
-    public void SetDetail(TItem item);
+    public void SetDetail(TContent item);
 
     public void Clear();
 }
 
-public interface ISlotHandler <TItem>
+/// <summary>
+/// Establish a slot to store a content
+/// </summary>
+/// <typeparam name="TContent"></typeparam>
+public interface ISlotHandler<TContent>
 {
     public Button Button { get; }
+    public Selectable Selectable { get; }
 
     public bool Interact { get; }
 
-    public TItem Item { get; }
+    public TContent Content { get; }
 
     public Action OnSelectCallBack { get; set; }
     public Action OnExitCallBack { get; set; }
 
-    public void SetSlot(TItem item);
+    public void SetSlot(TContent item);
 
     public void ClearSlot();
 
     public void CheckSlot();
 
     public void UpdateSlot();
+
+    public void UIState(bool state);
 }
 
+/// <summary>
+/// Classification all category for contens in slotfield
+/// </summary>
 public interface ICategoryHandler
 {
     [Serializable]
@@ -203,6 +228,9 @@ public interface ICategoryHandler
     public void SelectCategory(string category);
 }
 
+/// <summary>
+/// Basic func for UI which needs to UpdateUI.
+/// </summary>
 public interface IUpdateUIHandler 
 {
     public Button Cancel { get; }
@@ -210,4 +238,164 @@ public interface IUpdateUIHandler
     public void UIState(bool state);
 
     public void UpdateUI();
+}
+
+/// <summary>
+/// For the Selectable which color will fixed after select
+/// </summary>
+public interface IColoredOnSelect 
+{
+    [Serializable]
+    public class SelectColor 
+    {
+        [SerializeField]
+        private Color deSelect;
+        [SerializeField]
+        private Color onSelect;
+
+        public SelectColor() 
+        {
+            this.deSelect = Color.white;
+            this.onSelect = Color.white;
+        }
+
+        public SelectColor(Color deSelect, Color onSelect) 
+        {
+            this.deSelect = deSelect;
+            this.onSelect = onSelect;
+        }
+
+        public Color GetColor(bool state) 
+        {
+            return state ? onSelect : deSelect;
+        }
+
+        public ColorBlock ChangeNormal(ColorBlock colorBlock, bool state) 
+        {
+            colorBlock.normalColor = GetColor(state);
+
+            return colorBlock;
+        }
+    }
+
+    public SelectColor SelectedColor { get; }
+
+    public void Select();
+}
+
+public interface INaviSelectable 
+{
+    public Selectable Selectable { get; }
+
+    public bool IsSelected { get; }
+
+    public INavigationCtrl Belonging { get; set; }
+
+    public Vector2 ID { get; set; }
+
+    public void Select();
+
+    public void DeSelect();
+
+    public INaviSelectable FindNavi(Vector2 direct) 
+    {
+        Selectable select = null;
+
+        if (direct.x == 1) { select = this.Selectable.FindSelectableOnRight(); }
+
+        if (direct.x == -1) { select = this.Selectable.FindSelectableOnLeft(); }
+
+        if (direct.y == 1) { select = this.Selectable.FindSelectableOnUp(); }
+
+        if (direct.y == -1) { select = this.Selectable.FindSelectableOnDown(); }
+
+        return select?.GetComponent<INaviSelectable>();
+    }
+
+}
+
+public interface INavigationCtrl 
+{
+    [SerializeField]
+    public enum ENaviDirect 
+    {
+        None,
+        Horizontal,
+        Vertical,
+        Flexible
+    }
+
+    public ENaviDirect Direct { get; }
+
+    public float Row { get; }
+
+    public float Column { get; }
+
+    public bool WrapAround { get; }
+
+    public INaviSelectable FinalSelect { get;}
+
+    public List<INaviSelectable> Selectables { get; }
+
+    public void GetSelectables();
+
+    public void GetSelectables(Func<INaviSelectable, bool> predicate);
+
+    public void SetNavigation();
+
+    public void SetFinal(INaviSelectable final);
+
+    public INaviSelectable FindSelectables(Vector2 direct);
+}
+
+public interface INaviPanel
+{
+    [Serializable]
+    public class Navi
+    {
+        [SerializeField]
+        private NaviPanel up;
+        [SerializeField]
+        private NaviPanel down;
+        [SerializeField]
+        private NaviPanel left;
+        [SerializeField]
+        private NaviPanel right;
+
+        public INaviPanel FindPanel(Vector2 direct) 
+        {
+            INaviPanel select = null;
+
+            if (direct.y == 1) { select = this.up; }
+
+            if (direct.y == -1) { select = this.down; }
+
+            if (direct.x == 1) { select = this.right; }
+
+            if (direct.x == -1) { select = this.left; }
+
+            return select;
+        }
+    }
+
+    public bool Initial { get; }
+
+    public Navi NaviPanels { get; }
+
+    public INaviPanel FindPanel(Vector2 direct);
+}
+
+public interface INaviPanelCtrl 
+{
+    public List<INaviPanel> NaviPanels { get; }
+
+    public INaviPanel CurrentPanel { get; }
+
+    public INaviPanel Initial { get; }
+
+    public void GetNaviPanels();
+
+    public void SelectPanel(Vector2 direct);
+
+    public void PanelInitialize();
 }

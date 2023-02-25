@@ -8,9 +8,64 @@ namespace RoleSystem
     [RequireComponent(typeof(Health))]
     [RequireComponent(typeof(Rigidbody2D))]
     [RequireComponent(typeof(CapsuleCollider2D))]
-    [RequireComponent(typeof(PlayerInput))]
-    public class SwordMan : PlayerController
+    public class SwordMan : PlayerController, IInputClient
     {
+        #region IInputClient
+
+        [SerializeField]
+        private bool isCurrent;
+        [SerializeField]
+        private List<IInputClient.RequireAxes> axes;
+        
+        public List<IInputClient.RequireAxes> Axes => this.axes;
+
+        public bool IsCurrent 
+        { 
+            get 
+            {
+                return this.isCurrent;
+            } 
+
+            set 
+            {
+                this.isCurrent = value;
+
+                if (!value) { Move(Vector2.zero); }
+            }
+        }
+
+        public void GetValue(IEnumerable<AxesValue<float>> values) 
+        {
+            if (this.Uncontrollable) { return; }
+
+            var direct = new Vector2();
+
+            values.ToList().ForEach(v => 
+            {
+                if (v.AxesName == "Horizontal") { direct.x = v.Value; return; }
+
+                if (v.AxesName == "Vertical") { direct.y = v.Value; return; }
+            });
+            
+            this.Move(direct);
+        }
+
+        public void GetValue(IEnumerable<AxesValue<bool>> values)
+        {
+            values.ToList().ForEach(v => 
+            {
+                if (v.AxesName == "Jump") { this.Jump(v.Value); return; }
+
+                if (v.AxesName == "Dash") { this.Dash(v.Value); return; }
+
+                if (v.AxesName == "Attack") { this.Attack(v.Value); return; }
+
+                if (v.AxesName == "Inventory" && v.Value) { CustomContainer.GetContent<InventorySystem.InventoryUI>("Inventory")?.UIState(true); }
+            });
+        }
+
+        #endregion
+
         protected override void Awake()
         {
             base.Awake();
@@ -18,113 +73,100 @@ namespace RoleSystem
 
         protected void Start()
         {
+            KeyManager.SetBasic(this, true);
+
             Initialize();
-        }
-
-        protected void Update()
-        {
-            if (!hasDetail) { return; }
-
-            if (uncontrollable) { return; }
-
-            Move();
-
-            Jump();
-
-            Dash();
-
-            Attack();
-
-            Dead();
         }
 
         #region 動作實作
 
-        protected override void Move()
+        protected override void Move(Vector2 value)
         {
-            float horizontal = playerInput.horizontal;
-            float vertical = playerInput.vertical;
+            var horizontal = value.x;
+            var vertival = value.y;
 
-            if (horizontal == 0 || pause)
+            interactSensor.SetDirect(value);
+
+            if (horizontal == 0) { if (this.IsGround) animator.Play("Idle"); }
+
+            if (horizontal != 0)
             {
-                if (isGround) { animator.Play("Idle"); }
+                this.Flip(horizontal * -1);
 
-                if (pause) { return; }
+                float speed = horizontal * actionDetail.WalkSpeed * Time.deltaTime;
+
+                transform.transform.Translate(CheckSpeed(speed), 0f, 0f);
+
+                if (this.IsGround) { animator.Play("Run"); }
             }
-
-            if (horizontal > 0) { isFlip = true; }
-            if (horizontal < 0) { isFlip = false; }
-
-            Flip(isFlip);
-
-            float speed = horizontal * actionDetail.WalkSpeed * Time.deltaTime;
-
-            transform.transform.Translate(CheckSpeed(speed), 0f, 0f);
-
-            if (horizontal != 0 && isGround) { animator.Play("Run"); }
         }
 
-        protected override void Jump()
+        private bool jumpState = false;
+
+        protected override void Jump(bool jump)
         {
-            if (pause) { return; }
-
-            if (isGround) { jumpCount = 0; }
-
-            if (!isGround && jumpCount > actionDetail.MaxJumpCount) { return; }
-
-            if (playerInput.jump)
+            if (jump)
             {
-                animator.Play("Jump");
-
-                isGround = false;
-
-                jumpCount++;
-
-                if (jumpCount <= actionDetail.MaxJumpCount)
+                if (jumpState && jumpPress <= actionDetail.MaxJumpHold)
                 {
+                    jumpPress += Time.deltaTime;
+
+                    if (jumpPress >= 0.1f) { rigid.AddForce(rigid.velocity = Vector2.up * actionDetail.JumpForce * 0.55f); }
+                }
+
+                if (!jumpState && jumpCount < actionDetail.MaxJumpCount )
+                {
+                    if (jumpCount > 0 && !this.IsGround) { jumpCount++; }
+
+                    if (jumpCount == 0 && this.IsGround) { jumpCount = 1; }
+
+                    if (jumpCount == 0 && !this.IsGround) { jumpCount = 2; }
+
                     jumpPress = 0f;
 
                     rigid.AddForce(rigid.velocity = Vector2.up * actionDetail.JumpForce * 0.4f);
+
+                    jumpState = true;
                 }
-
-                return;
             }
 
-            if (!isGround && playerInput.jumpHold && jumpPress <= actionDetail.MaxJumpHold)
-            {
-                jumpPress += Time.deltaTime;
+            if (!jump || Uncontrollable) { jumpState = false; }
 
-                if (jumpPress >= 0.1f) { rigid.AddForce(rigid.velocity = Vector2.up * actionDetail.JumpForce * 0.55f); }
-            }
+            if (this.VerticalVelocity != 0 && !Uncontrollable) { animator.Play("Jump"); }
         }
 
-        protected override void Dash()
+        private bool dashState = false;
+
+        protected override void Dash(bool dash)
         {
-            if (pause) { return; }
-
-            var passTime = Time.realtimeSinceStartup - dashPress;
-
-            if (dashPress != 0 && passTime < actionDetail.DashCoolDown) { return; }
-
-            if (playerInput.dash)
+            if (dashState) 
             {
-                dashPress = Time.realtimeSinceStartup;
+                dashPress += Time.deltaTime;
+
+                if (dashPress >= actionDetail.DashCoolDown) { dashState = false; }
+            }
+
+            if (dash && !dashState)
+            {
+                dashPress = 0f;
 
                 animator.Play("Dash");
 
-                onPlayingCallBack = Dashing;
-                StartCoroutine(AnimatorPlaying("Dash"));
+                this.OnPlayingCallBack = Dashing;
+                StartCoroutine(AnimatorPlaying("Dash", true));
+
+                dashState = true;
             }
         }
 
-        protected override void Attack()
+        protected override void Attack(bool attack)
         {
-            if (playerInput.attack && !pause)
+            if (attack)
             {
                 animator.Play("Attack");
 
-                onPlayingCallBack = Attacking;
-                StartCoroutine(AnimatorPlaying("Attack"));
+                this.OnPlayingCallBack = Attacking;
+                StartCoroutine(AnimatorPlaying("Attack", true)); ;
             }
         }
 
@@ -132,7 +174,7 @@ namespace RoleSystem
         {
             if(!health.IsDead) { return; }
 
-            dead = true;
+            this.IsDead = true;
 
             animator.Play("Die");
         }
@@ -142,6 +184,8 @@ namespace RoleSystem
             health.Hurt(injury);
 
             PlayerInform.Instance.SetLife(health.NormalizedLife);
+
+            if (this.health.IsDead) { Dead(); }
         }
 
         #endregion
@@ -164,9 +208,9 @@ namespace RoleSystem
         {
             float attackTime = animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
 
-            if (attackTime >= 0.505f && attackTime <= 0.666f) { attackSenesor.Sensor.enabled = true; }
+            if (attackTime >= 0.505f && attackTime <= 0.666f) { attackSensor.Sensor.enabled = true; }
 
-            else { attackSenesor.Sensor.enabled = false; }
+            else { attackSensor.Sensor.enabled = false; }
         }
 
         #endregion
@@ -182,5 +226,10 @@ namespace RoleSystem
         }
 
         #endregion
+
+        public void OnDestroy()
+        {
+            if (KeyManager.HasInputClient) { KeyManager.SetBasic(this, false); }
+        }
     }
 }

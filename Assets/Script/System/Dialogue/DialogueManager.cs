@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,6 +10,8 @@ namespace DialogueSystem
         private Queue<Dialogue> conversation;
 
         private DialoguePanel panel;
+
+        public Action DialogueEndCallBack { get; set; }
 
         #region IPageStateHandler
 
@@ -27,6 +31,13 @@ namespace DialogueSystem
             panel = CustomContainer.GetContent<DialoguePanel>("Dialogue");
         }
 
+        public void StartDialogue(DialogueAsset asset, Action onEnd) 
+        {
+            DialogueEndCallBack = onEnd;
+
+            StartDialogue(asset);
+        }
+
         public void StartDialogue(DialogueAsset asset)
         {
             conversation = asset.Conversation;
@@ -38,7 +49,7 @@ namespace DialogueSystem
 
         public void DisplayNextSentence()
         {
-            if (conversation.Count == 0) 
+            if (!conversation.Any()) 
             { 
                 EndDialogue();
                 return; 
@@ -52,6 +63,12 @@ namespace DialogueSystem
         public void EndDialogue()
         {
             panel.PanelState(false);
+        }
+
+        public void EventInvokeAndReset() 
+        {
+            this.DialogueEndCallBack.Invoke();
+            this.DialogueEndCallBack = delegate { };
         }
 
         private void OnDestroy()

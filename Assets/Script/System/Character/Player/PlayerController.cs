@@ -4,65 +4,42 @@ using CustomInput;
 
 namespace RoleSystem
 {
-    public abstract class PlayerController : MonoBehaviour, IHurtAction, IGroundCheck, IWallCheck
+    public abstract class PlayerController : MonoBehaviour, IHurtAction, IGroundCheck, IWallCheck, IFlipHandler
     {
         [SerializeField]
         private CharacterDetailAsset characterDetail;
+        /// <summary>
+        /// Require Components
+        /// </summary>
+        protected Animator animator;
+        protected Collider2D capsule;
+        protected Rigidbody2D rigid;
+        /// <summary>
+        /// Detail Script
+        /// </summary>
+        protected Health health;
+        protected ActionDetail actionDetail;
+        protected AttackSensor attackSensor;
+        protected InteractSensor interactSensor;
 
         protected int jumpCount;
         protected float jumpPress = 0f;
 
         protected float dashPress = 0f;
 
-        protected bool isFlip;
-        protected bool isGround;
-        protected float isCollision;
+        public bool IsDead { get; protected set; }
+        public bool Uncontrollable { get; protected set; }
+        public bool HasDetail => this.characterDetail != null;
 
-        protected Health health;
-        protected PlayerInput playerInput;
-        protected ActionDetail actionDetail;
-
-        protected Animator animator;
-        protected Rigidbody2D rigid;
-        protected AttackSensor attackSenesor;
-        protected Collider2D capsule;
-
-        public float VerticalVelocity => rigid.velocity.y;
-        public bool IsFlip { get => isFlip; set => isFlip = value; }
-        public bool IsGround { get => isGround; set => isGround = value; }
-        public float IsCollision { get => isCollision; set => isCollision = value; }
-
-        protected bool pause => GameManager.Instance.IsPageOpen;
-        protected bool hasDetail => actionDetail != null;
-        protected bool dead;
-
-        #region 確認是否可控
-
-        protected bool uncontrollable
-        {
-            get
-            {
-                foreach (string action in actionDetail.UnControllableAction)
-                {
-                    if (animator.GetCurrentAnimatorStateInfo(0).IsName(action)) { return true; }
-                }
-
-                if (dead) { return true; }
-
-                return false;
-            }
-        }
-
-        #endregion
 
         protected virtual void Awake()
         {
             health = this.GetComponent<Health>();
             rigid = this.GetComponent<Rigidbody2D>();
-            playerInput = this.GetComponent<PlayerInput>();
             capsule = this.GetComponent<Collider2D>();
             animator = this.GetComponentInChildren<Animator>();
-            attackSenesor = this.GetComponentInChildren<AttackSensor>();
+            attackSensor = this.GetComponentInChildren<AttackSensor>();
+            interactSensor = this.GetComponentInChildren<InteractSensor>();
 
             actionDetail = characterDetail.ActionDetail;
 
@@ -74,13 +51,13 @@ namespace RoleSystem
 
         #region 動作抽象
 
-        protected abstract void Move();
+        protected abstract void Move(Vector2 value);
         
-        protected abstract void Jump();
+        protected abstract void Jump(bool value);
 
-        protected abstract void Dash();
+        protected abstract void Dash(bool value);
 
-        protected abstract void Attack();
+        protected abstract void Attack(bool value);
 
         public abstract void Hurt(float injury);
 
@@ -90,38 +67,75 @@ namespace RoleSystem
 
         #region 動作事件觸發
 
-        protected System.Action onPlayingCallBack;
+        protected System.Action OnPlayingCallBack;
 
-        protected virtual IEnumerator AnimatorPlaying(string name)
+        protected virtual IEnumerator AnimatorPlaying(string name, bool uncontrollable)
         {
+            this.Uncontrollable = uncontrollable;
+
             while (!animator.GetCurrentAnimatorStateInfo(0).IsName(name)) { yield return null; }
 
             while (animator.GetCurrentAnimatorStateInfo(0).IsName(name))
             {
-                onPlayingCallBack.Invoke();
+                OnPlayingCallBack.Invoke();
 
                 yield return null;
             }
+
+            this.Uncontrollable = false;
         }
 
         #endregion
 
+        #region IWallCheck
+
+        public float IsCollision { get; set; }
+
         public virtual float CheckSpeed(float speed)
         {
-            if (isCollision > 0 && speed < 0) { return 0f; }
+            if (this.IsCollision > 0 && speed < 0) { return 0f; }
 
-            if (isCollision < 0 && speed > 0) { return 0f; }
+            if (this.IsCollision < 0 && speed > 0) { return 0f; }
 
             return speed;
         }
 
-        public void Flip(bool flip)
-        {
-            var flipX = flip ? -1 : 1;
+        #endregion
 
-            transform.localScale = new Vector3(flipX, 1f, 1f);
+        #region IFlipHandler
+
+        public Vector3 Scale { get; protected set; }
+
+        protected bool isFlip;
+        public bool IsFlip { get => isFlip; set => isFlip = value; }
+        
+        public void Flip(float flip)
+        {
+            if (flip == 0) { return; }
+
+            this.IsFlip = flip < 0;
+
+            transform.localScale = new Vector3(flip, 1f, 1f);
         }
 
-        public virtual void Land() { }
+        public void LookAt(Transform transform) 
+        {
+
+        }
+
+        #endregion
+
+        #region IGroundCheck
+
+        public bool IsGround { get; set; }
+        
+        public float VerticalVelocity => rigid.velocity.y;
+
+        public virtual void Land() 
+        {
+            this.jumpCount = 0;
+        }
+
+        #endregion
     }
 }

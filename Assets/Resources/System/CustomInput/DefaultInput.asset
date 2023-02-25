@@ -18,38 +18,62 @@ MonoBehaviour:
     - axesName: Horizontal
       positive: 275
       negative: 276
+      holdsTime: 0.35
+      spaceTime: 0.05
     - axesName: Vertical
       positive: 273
       negative: 274
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Attack
       positive: 118
       negative: 0
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Jump
       positive: 99
       negative: 0
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Dash
       positive: 120
       negative: 0
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Inventory
       positive: 256
       negative: 0
+      holdsTime: 0
+      spaceTime: 0
   - inputType: 1
     axes:
     - axesName: Horizontal
       positive: 330
       negative: 331
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Vertical
       positive: 332
       negative: 333
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Attack
       positive: 334
       negative: 0
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Jump
       positive: 335
       negative: 0
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Dash
       positive: 336
       negative: 0
+      holdsTime: 0
+      spaceTime: 0
     - axesName: Inventory
       positive: 337
       negative: 0
+      holdsTime: 0
+      spaceTime: 0

@@ -491,6 +491,7 @@ GameObject:
   - component: {fileID: 5330738307354214099}
   - component: {fileID: 5330738307354214101}
   - component: {fileID: 5330738307354214098}
+  - component: {fileID: 1348372057515585318}
   m_Layer: 5
   m_Name: Content
   m_TagString: Untagged
@@ -559,6 +560,27 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &1348372057515585318
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5330738307354214096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb9c0329f3bf4d40b567697863436d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  initial: 1
+  naviPanels:
+    up: {fileID: 0}
+    down: {fileID: 0}
+    left: {fileID: 0}
+    right: {fileID: 0}
+  groupName: Teleport
+  direct: 2
+  wrapAround: 0
 --- !u!1 &5330738307481767766
 GameObject:
   m_ObjectHideFlags: 0

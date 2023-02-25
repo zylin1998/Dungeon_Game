@@ -21,9 +21,6 @@ namespace DialogueSystem
 
         private DialogueManager dialogueManager;
 
-        public Action DialogueStartCallBack { get; set; }
-        public Action DialogueEndCallBack { get; set; }
-
         #region Script Behaviour
 
         private void Start()
@@ -35,14 +32,12 @@ namespace DialogueSystem
 
         public void TriggerDialogue(DialogueAsset dialogue)
         {
-            TriggerDialogue(dialogue, null);
+            dialogueManager.StartDialogue(dialogue);
         }
 
-        public void TriggerDialogue(DialogueAsset dialogue, Action end) 
+        public void TriggerDialogue(DialogueAsset dialogue, Action onEnd) 
         {
-            DialogueEndCallBack = end ?? delegate { };
-
-            dialogueManager.StartDialogue(dialogue);
+            dialogueManager.StartDialogue(dialogue, onEnd);
         }
     }
 }

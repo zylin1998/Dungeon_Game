@@ -1,6 +1,12 @@
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+
+public interface IContainerGroup 
+{
+    public string GroupName { get; }
+}
 
 public static class CustomContainer
 {
@@ -36,6 +42,11 @@ public static class CustomContainer
         {
             return (T)Contents.Find(match => match.GetType().Equals(typeof(T)));
         }
+
+        public List<T> GetContents<T>()
+        {
+            return Contents.FindAll(match => match.GetType().Equals(typeof(T))).ConvertAll(c => (T)c);
+        }
     }
 
     public static List<Container> Containers { get; private set; }
@@ -57,6 +68,11 @@ public static class CustomContainer
     public static TContent GetContent<TContent>(string group) 
     {
         return GetContainer(group).GetContent<TContent>();
+    }
+
+    public static List<TContent> GetContents<TContent>(string group) 
+    {
+        return GetContainer(group).GetContents<TContent>();
     }
 
     private static Container GetContainer(string group) 

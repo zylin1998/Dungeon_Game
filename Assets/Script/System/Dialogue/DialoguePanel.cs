@@ -1,8 +1,8 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using CustomInput;
-using ComponentPool;
 
 namespace DialogueSystem
 {
@@ -20,9 +20,6 @@ namespace DialogueSystem
         private Animator animator;
 
         private DialogueManager dialogueManager;
-
-        private GameManager gameManager => GameManager.Instance;
-        private DialogueTrigger dialogueTrigger => DialogueTrigger.Instance;
 
         private void Awake()
         {
@@ -66,7 +63,12 @@ namespace DialogueSystem
             {
                 //while (IsPause()) { yield return null; }
 
-                if (CheckInput()) { dialogueManager.DisplayNextSentence(); }
+                if (CheckInput()) 
+                {
+                    dialogue.text = sentence;
+
+                    break;
+                }
 
                 dialogue.text += letter;
 
@@ -100,18 +102,14 @@ namespace DialogueSystem
 
                 yield return null; 
             }
+            
+            if (isOpen) { dialogueManager.DisplayNextSentence(); }
 
-            if (name == "Open") { dialogueManager.DisplayNextSentence(); }
-
-            if (name == "Close") 
+            if (!isOpen) 
             { 
                 dialogueManager.PageState = false;
 
-                if (dialogueTrigger.DialogueEndCallBack != null) 
-                { 
-                    dialogueTrigger.DialogueEndCallBack.Invoke();
-                    dialogueTrigger.DialogueEndCallBack = null;
-                }
+                dialogueManager.EventInvokeAndReset();
             }
         }
 

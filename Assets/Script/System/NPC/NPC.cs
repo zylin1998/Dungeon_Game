@@ -8,7 +8,7 @@ using DialogueSystem;
 
 namespace RoleSystem
 {
-    public class NPC : MonoBehaviour, IFlipHandler, IInteractHandler
+    public class NPC : MonoBehaviour, IFlipHandler, IInteractHandler, IInteractable
     {
         [SerializeField]
         private DialogueAsset dialogue;
@@ -20,19 +20,19 @@ namespace RoleSystem
             Scale = transform.localScale;
         }
 
-        private void OnTriggerStay2D(Collider2D collision)
+        #region IInteractable
+
+        [SerializeField]
+        private bool instance;
+
+        public bool Instance => this.instance;
+
+        public void Interact() 
         {
-            if (!collision.CompareTag("Player")) { return; }
-
-            float side = collision.transform.position.x <= transform.position.x ? -1f : 1f;
-
-            Flip(side);
-
-            if (CheckInput() != 0 && !GameManager.Instance.IsPageOpen)
-            {
-                InteractCallBack.Invoke();
-            }
+            InteractCallBack.Invoke();
         }
+
+        #endregion
 
         #region IFlipHandler
 
@@ -47,6 +47,17 @@ namespace RoleSystem
             transform.localScale = newScale;
         }
 
+        public void LookAt(Transform transform) 
+        {
+            var target = transform.position.x;
+            var locate = this.transform.position.x;
+
+            var distance = target - locate;
+
+            if (distance < 0) { this.Flip(-1); }
+            if (distance > 0) { this.Flip(1); }
+        }
+
         #endregion
 
         #region IInteractHandler
@@ -59,16 +70,5 @@ namespace RoleSystem
         }
 
         #endregion
-
-        public float CheckInput()
-        {
-#if UNITY_STANDALONE_WIN
-            return KeyManager.GetAxis("Vertical");
-#endif
-
-#if UNITY_ANDROID
-        return 0;
-#endif
-        }
     }
 }

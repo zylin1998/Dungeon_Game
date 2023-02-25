@@ -4,46 +4,67 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class CategorySelection : MonoBehaviour, ISelectHandler
+public class CategorySelection : MonoBehaviour, ISelectHandler, IColoredOnSelect, INaviSelectable
 {
     [SerializeField]
     private string category;
-    [SerializeField]
-    private Color UnSelectColor;
-    [SerializeField]
-    private Color OnSelectColor;
-    [SerializeField]
-    private Selectable selectable;
-    public ICategoryHandler categoryHandler { private get; set; }
+    
+    public string Category => this.category;
 
-    public string Category => category;
+    public ICategoryHandler categoryHandler { get; set; }
+
 
     private void Awake()
     {
-        selectable = this.GetComponent<Selectable>();
+        this.Selectable = this.GetComponent<Selectable>();
     }
+    
+    #region INaviSelectables
 
-    public void OnSelect(BaseEventData eventData)
-    {
-        SetColor(true);
+    public Selectable Selectable { get; private set; }
 
-        categoryHandler.SelectCategory(category);
-    }
+    public bool IsSelected { get; private set; }
+
+    public INavigationCtrl Belonging { get; set; }
+
+    public Vector2 ID { get; set; }
+
+    #endregion
+
+    #region IColoredOnSelect
+
+    [SerializeField]
+    private IColoredOnSelect.SelectColor selectedColor;
+
+    public IColoredOnSelect.SelectColor SelectedColor => this.selectedColor;
 
     public void Select()
     {
-        selectable.Select();
+        this.Selectable.Select();
+
+        UIState(true);
+
+        if (this.categoryHandler != null) { this.categoryHandler.SelectCategory(category); }
+
+        if (this.Belonging != null) { this.Belonging.SetFinal(this); }
     }
 
     public void DeSelect() 
     {
-        SetColor(false);
+        UIState(false);
     }
 
-    private void SetColor(bool state) 
+    #endregion
+
+    public void OnSelect(BaseEventData eventData)
     {
-        ColorBlock cb = selectable.colors;
-        cb.normalColor = state ? OnSelectColor : UnSelectColor;
-        selectable.colors = cb;
+        Select();
+    }
+
+    private void UIState(bool state) 
+    {
+        this.IsSelected = state;
+
+        this.Selectable.colors = selectedColor.ChangeNormal(this.Selectable.colors, state);
     }
 }

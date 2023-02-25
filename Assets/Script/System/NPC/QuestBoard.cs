@@ -8,7 +8,7 @@ using CustomInput;
 namespace RoleSystem
 {
     [RequireComponent(typeof(Collider2D))]
-    public class QuestBoard : MonoBehaviour, IInteractHandler
+    public class QuestBoard : MonoBehaviour, IInteractHandler, IInteractable
     {
         private QuestBoardUI questBoard { get; set; }
 
@@ -33,25 +33,21 @@ namespace RoleSystem
 
         #endregion
 
-        private void OnTriggerStay2D(Collider2D collision)
-        {
-            if (!collision.CompareTag("Player")) { return; }
+        #region IInteractable
 
-            if (CheckInput() && !GameManager.Instance.IsPageOpen)
+        [SerializeField]
+        private bool instance;
+
+        public bool Instance => this.instance;
+
+        public void Interact()
+        {
+            if (!GameManager.Instance.IsPageOpen)
             {
                 InteractCallBack.Invoke();
             }
         }
 
-        public bool CheckInput()
-        {
-#if UNITY_STANDALONE_WIN
-            return KeyManager.GetAxis("Vertical") != 0;
-#endif
-
-#if UNITY_ANDROID
-        return 0;
-#endif
-        }
+        #endregion
     }
 }
