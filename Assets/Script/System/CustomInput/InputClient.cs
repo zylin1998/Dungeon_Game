@@ -148,7 +148,7 @@ namespace CustomInput
             this.Axes = this.Current.Axes.Where(a => a.GetKeyType == EGetKeyType.GetAxes).ToList();
             this.Keys = this.Current.Axes.Where(a => a.GetKeyType != EGetKeyType.None && a.GetKeyType != EGetKeyType.GetAxes).ToList();
 
-            Debug.Log(this.Current.ToString());
+            //Debug.Log(this.Current.ToString());
         }
 
         public void SetBasic(IInputClient client) 

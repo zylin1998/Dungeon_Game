@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: RobberSlave_Progress
   m_EditorClassIdentifier: 
   conversation:
-  - name: "\u8001\u4EBA"
-    sentence: "\u90A3\u5C31\u62DC\u8A17\u60A8\u8D95\u8D70\u90A3\u4E9B\u76DC\u8CCA\u4E86"
+  - name: Old Man
+    sentence: Please drive away the robbers at the entry.

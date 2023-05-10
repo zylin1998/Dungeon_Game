@@ -16,13 +16,13 @@ MonoBehaviour:
     scene: Village
     giver: QuestBoard
   detail:
-    title: "\u9A45\u8D95\u76DC\u8CCA"
-    description: "\u53C8\u6709\u76DC\u8CCA\u5F98\u5F8A\u5728\u6751\u5B50\u5165\u53E3\uFF0C\u8ACB\u5C07\u4ED6\u5011\u9A45\u9010"
+    title: Defeat Robbers
+    description: Drive away the Robbers at the Entry.
     goldReward: 150
     questState: Start
   goal: {fileID: 11400000, guid: 811b45fa6fc016040bb213f475a35231, type: 2}
   dialogue:
-    start: {fileID: 11400000, guid: 1d29f501fb220b94c8f2bd49c8ae94bc, type: 2}
-    progress: {fileID: 11400000, guid: d7d7dad7ba7fd6e48b47626404c08d44, type: 2}
-    finish: {fileID: 11400000, guid: 5b5011940d7e2fc469d7fe42bb9a27cc, type: 2}
+    start: {fileID: 11400000, guid: b00193ff789541e4b87b9c8e56c0341a, type: 2}
+    progress: {fileID: 11400000, guid: cd24fad54672cfa468858c2d9069552a, type: 2}
+    finish: {fileID: 11400000, guid: d8ee2f8a43d3d5a48855bb34e0774de4, type: 2}
   newQuestAsset: []

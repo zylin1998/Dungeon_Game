@@ -137,6 +137,10 @@ namespace DialogueSystem
 
         private bool CheckInput() 
         {
+#if UNITY_WEBGL
+            return KeyManager.GetKeyDown("Jump");
+#endif
+
 #if UNITY_STANDALONE_WIN
             return KeyManager.GetKeyDown("Jump");
 #endif

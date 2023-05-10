@@ -16,8 +16,8 @@ MonoBehaviour:
     scene: Village
     giver: Old_Man
   detail:
-    title: "\u9A45\u8D95\u76DC\u8CCA"
-    description: "\u8D95\u8D70\u5728\u6751\u5B50\u5165\u53E3\u5F98\u5F8A\u7684\u76DC\u8CCA"
+    title: Defeat Robbers
+    description: Drive away the Robbers at the Entry.
     goldReward: 150
     questState: Start
   goal: {fileID: 11400000, guid: c40d75a2eb9cc9b4b98d34b431d1b2b0, type: 2}

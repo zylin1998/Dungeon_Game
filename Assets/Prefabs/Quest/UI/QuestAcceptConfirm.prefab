@@ -313,7 +313,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u78BA\u8A8D"
+  m_Text: Confirm
 --- !u!1 &4932253744593214017
 GameObject:
   m_ObjectHideFlags: 0
@@ -1258,4 +1258,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u53D6\u6D88\n"
+  m_Text: Cancel

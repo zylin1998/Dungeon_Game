@@ -73,13 +73,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 3
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u51FA\u552E\u50F9\u683C"
+  m_Text: Sell
 --- !u!1 &1471923048721843376
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,6 +885,8 @@ MonoBehaviour:
     right: {fileID: 0}
   groupName: 
   direct: 2
+  row: 0
+  column: 0
   wrapAround: 0
 --- !u!1 &3104713629409896777
 GameObject:
@@ -1402,6 +1404,8 @@ MonoBehaviour:
     right: {fileID: 319166430592593655}
   groupName: 
   direct: 2
+  row: 0
+  column: 0
   wrapAround: 0
 --- !u!1 &3104713630453445258
 GameObject:
@@ -1934,7 +1938,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u9053\u5177\u8CC7\u8A0A"
+  m_Text: Item
 --- !u!1 &6058034859371824800
 GameObject:
   m_ObjectHideFlags: 0
@@ -2166,10 +2170,10 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 3
     m_MaxSize: 40
-    m_Alignment: 3
+    m_Alignment: 4
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u8CFC\u8CB7\u50F9\u683C"
+  m_Text: Perchase
